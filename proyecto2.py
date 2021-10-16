@@ -1,3 +1,4 @@
+from os import pipe
 from tkinter import *
 from tkinter.filedialog import asksaveasfilename, askopenfilename
 import subprocess
@@ -5,6 +6,7 @@ import subprocess
 compiler = Tk()
 compiler.title('Drac compiler')
 file_path = ''
+code=''
 
 def set_file_path(path):
     global file_path
@@ -29,6 +31,7 @@ def save_file_as():
         set_file_path(path)
     
 def run():
+    global code
     code = editor.get('1.0', END)
     #print(code) #type: <class 'str'> codigo de entrada
     #exec(code) #ejecutar el código de entrada
@@ -68,3 +71,6 @@ code_output.pack()
 
 compiler.mainloop()
 
+##########################################################################################################
+##########################################################################################################
+print(code)
