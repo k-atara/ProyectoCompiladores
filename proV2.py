@@ -28,7 +28,7 @@ print(type(code))
 print(code)
 
 #falta unicode
-regexFinal=r'([(][*](.|\n)*?[*][)])|(([-]{2}.*))|([(])|([)])|([[])|([]])|([{])|([}])|([;])|([,])|([-])|([+])|([*])|([/])|([%])|([==])|([=])|([<>])|([>=])|([<=])|([<])|([>])|(main\b)|(prints\b)|(and\b)|(break\b)|(dec\b)|(do\b)|(elif\b)|(else\b)|(false\b)|(if\b)|(inc\b)|(not\b)|(or\b)|(return\b)|(true\b)|(var\b)|(while\b)|([a-zA-Z][a-zA-Z0-9_]*)|(\d+)|\".*\"|(\n)|(\s)|(\r)|(\t)|(\\)|(\')|(\")|(.)'
+regexFinal=r'([(][*](.|\n)*?[*][)])|(([-]{2}.*))|([(])|([)])|([[])|([]])|([{])|([}])|([;])|([,])|([-])|([+])|([*])|([/])|([%])|([==])|([=])|([<>])|([>=])|([<=])|([<])|([>])|(main\b)|(prints\b)|(and\b)|(break\b)|(dec\b)|(do\b)|(elif\b)|(else\b)|(false\b)|(if\b)|(inc\b)|(not\b)|(or\b)|(return\b)|(true\b)|(var\b)|(while\b)|([a-zA-Z][a-zA-Z0-9_]*)|(\d+)|(\".*\")|(\n)|(\s)|(\r)|(\t)|(\\)|(\')|(\")|(.)'
 
 respuestaRegex=re.finditer(regexFinal,code)
 nToken=0
