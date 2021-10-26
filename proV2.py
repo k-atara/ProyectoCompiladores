@@ -42,10 +42,6 @@ def IterarGrupos(m):
                 listaTokens.append(token)
                 break
 
-
-#Lista del nombre de los simbolos o palabras
-#lCat=['']
-
 nom_archivo = sys.argv[1]
 
 file=open(nom_archivo)
@@ -80,7 +76,10 @@ for m in respuestaRegex:
     IterarGrupos(m)
 
 for j in range(len(listaTokens)):
-    print(listaTokens[j].lexema)
+    print("\nLexema: " + listaTokens[j].lexema + "\nCategoria/Nombre: " + listaTokens[j].category )
+
+print("\n")
+print("----------------------------------------------------")
 print("Numero de tokens: " +str(len(listaTokens)))
 print("Numero de filas: "+str(row))
 
