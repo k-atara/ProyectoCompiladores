@@ -1,11 +1,14 @@
-(* File: 001_hello.drac
-   The classical "hello, world" program.
-   (C) 2021 Ariel Ortiz, ITESM CEM.
-*)
-
-
---$
-main() {
-    prints("hello, world\n");
-    return 42;
+binary(num) {
+    var result, remainder;
+    if (num <= 0) {
+        return "0";
+    }
+    result = "";
+    while (num > 0) {
+        remainder = num % 2;
+        add(result, remainder + '0');
+        num = num / 2;
+    }
+    reverse(result);
+    return result;
 }
