@@ -24,8 +24,10 @@ def IterarGrupos(m):
     grupo=m.groups()
     for i in range(len(grupo)):
         if(grupo[i]!=None):
+            tokenLength= m.end()-m.start()
             if(listaCategoria[i]=='ENTER'):
                 row+=1
+                column=m.start()+tokenLength
                 break
             elif(listaCategoria[i]=='MULTICOM'):
                 x=grupo[i]
@@ -35,10 +37,11 @@ def IterarGrupos(m):
             elif(listaCategoria[i]=='SPACE' or listaCategoria[i]=='TAB' or listaCategoria[i]=='COMMENT'):
                 break
             elif(listaCategoria[i]=='ILEGAL'):
-                print("ERROR EN LA LINEA "+ str(row))
+                print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1))
                 sys.exit()
             else:
-                token = Token(grupo[i],listaCategoria[i],row,column)
+                columnToken=m.start()-column+1
+                token = Token(grupo[i],listaCategoria[i],row,columnToken)
                 listaTokens.append(token)
                 break
 
@@ -76,7 +79,9 @@ for m in respuestaRegex:
     IterarGrupos(m)
 
 for j in range(len(listaTokens)):
-    print("\nLexema: " + listaTokens[j].lexema + "\nCategoria/Nombre: " + listaTokens[j].category )
+    print("\nToken numero: "+str(j+1))
+    print("Lexema: " + listaTokens[j].lexema + "\nCategoria/Nombre: " + listaTokens[j].category)
+    print("Row: "+ str(listaTokens[j].row) + "\nColumn: "+ str(listaTokens[j].column))
 
 print("\n")
 print("----------------------------------------------------")

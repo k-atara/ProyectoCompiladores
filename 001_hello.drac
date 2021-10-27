@@ -1,17 +1,11 @@
-main() {
-    var option, num;
-    do {
-        prints("Input a number: ");
-        num = readi();
-        prints("Conversion to binary of that number: ");
-        prints(binary(num));
-        println();
-        prints("Convert another number? ");
-        option = reads();
-        if (size(option) == 0) {
-            option = 'N';
-        } else {
-            option = get(option, 0);
-        }
-    } while (option == 'Y' or option == 'y');
+(* File: 001_hello.drac
+   The classical "hello, world" program.
+   (C) 2021 Ariel Ortiz, ITESM CEM.
+*)
+
+
+--$
+main() {$
+    prints("hello, world\n");
+    return 42;
 }
