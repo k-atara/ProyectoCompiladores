@@ -4,6 +4,7 @@ from tkinter.filedialog import asksaveasfilename, askopenfilename
 import subprocess
 import sys
 import re
+import copy
 
 #-------------------------------------------------------------------------------TOKENIZADOR
 
@@ -43,13 +44,17 @@ def IterarGrupos(m):
                 sys.exit()
             else:
                 columnToken=m.start()-column+1
-                token = Token(grupo[i],listaCategoria[i],row,columnToken)
+                if(listaCategoria[i]=='MAIN' or listaCategoria[i]=='PRINTS'):
+                    token = Token(grupo[i],'IDENTIFIER',row,columnToken)
+                else:
+                    token = Token(grupo[i],listaCategoria[i],row,columnToken)
                 listaTokens.append(token)
                 break
 
-nom_archivo = sys.argv[1]
+#nom_archivo = sys.argv[1]
 
-file=open(nom_archivo)
+#file=open(nom_archivo)
+file = open(r"C:\Users\Juan\OneDrive\Escritorio\9no_Semestre\Compiladores\P2\ProyectoCompilador\ProyectoCompiladores\001_hello.drac", "r")
 code=file.read()
 file.close()
 
@@ -74,10 +79,10 @@ nToken=0
 
 for m in respuestaRegex: 
     nToken+=1
-    print(str(nToken)+'\n')
-    print(m.groups(),m.start(),m.end())
-    print("-----------------")
-    print('\n')
+    # print(str(nToken)+'\n')
+    # print(m.groups(),m.start(),m.end())
+    # print("-----------------")
+    # print('\n')
     IterarGrupos(m)
 
 for j in range(len(listaTokens)):
@@ -259,7 +264,6 @@ pExprprimaryP = ['LPAR']
 pArray = ['LSQB']
 pLit = ['TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
 
-
 contador=-1
 lEntrada=len(listaTokens)
 vEntrada = listaTokens
@@ -273,7 +277,7 @@ def GetCurrentToken():
     global vEntrada
     global lEntrada
     if(contador<lEntrada):
-        curToken=vEntrada[contador].categoria
+        curToken=vEntrada[contador].category
         print(str(curToken))
         #print(vEntrada[contador].categoria)
         return curToken
@@ -288,7 +292,7 @@ def ExpectToken(category):
     global curToken
     global vEntrada
     if(curToken == category):
-        tokenNuevo = Token(vEntrada[contador])
+        tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
     else:
@@ -307,8 +311,10 @@ def DeflistP():
         DeflistP()
     
 def Def():
-    Vardef()
-    Fundef()
+    if(curToken == 'IDENTIFIER'):
+        Fundef()
+    elif(curToken=='VAR'):
+        Vardef()
 
 def Vardef():
     ExpectToken('VAR')
