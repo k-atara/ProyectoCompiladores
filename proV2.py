@@ -51,10 +51,10 @@ def IterarGrupos(m):
                 listaTokens.append(token)
                 break
 
-#nom_archivo = sys.argv[1]
+nom_archivo = sys.argv[1]
 
-#file=open(nom_archivo)
-file = open(r"C:\Users\Juan\OneDrive\Escritorio\9no_Semestre\Compiladores\P2\ProyectoCompilador\ProyectoCompiladores\pruebas\002_binary.drac", "r")
+file=open(nom_archivo)
+#file = open(r"path", "r")
 code=file.read()
 file.close()
 
@@ -86,15 +86,12 @@ for m in respuestaRegex:
     IterarGrupos(m)
 
 for j in range(len(listaTokens)):
-    print("\nToken numero: "+str(j+1))
-    print("Lexema: " + listaTokens[j].lexema + "\nCategoria/Nombre: " + listaTokens[j].category)
-    print("Row: "+ str(listaTokens[j].row) + "\nColumn: "+ str(listaTokens[j].column))
+    print("Token numero: "+str(j+1) + ", Lexema: " + listaTokens[j].lexema + ", Categoria/Nombre: " + listaTokens[j].category + ", Row: "+ str(listaTokens[j].row) + ", Column: "+ str(listaTokens[j].column))
 
-print("\n")
 print("----------------------------------------------------")
 print("Numero de tokens: " +str(len(listaTokens)))
 print("Numero de filas: "+str(row))
-
+print("----------------------------------------------------")
 
 
 
