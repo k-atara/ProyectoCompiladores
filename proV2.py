@@ -54,7 +54,7 @@ def IterarGrupos(m):
 #nom_archivo = sys.argv[1]
 
 #file=open(nom_archivo)
-file = open(r"C:\Users\Juan\OneDrive\Escritorio\9no_Semestre\Compiladores\P2\ProyectoCompilador\ProyectoCompiladores\001_hello.drac", "r")
+file = open(r"C:\Users\Juan\OneDrive\Escritorio\9no_Semestre\Compiladores\P2\ProyectoCompilador\ProyectoCompiladores\pruebas\002_binary.drac", "r")
 code=file.read()
 file.close()
 
@@ -135,12 +135,6 @@ print("Numero de filas: "+str(row))
 # stmtP -> ( exprlist ) ;
 # stmtincr -> inc id ;
 # stmtdecr -> dec id ;
-
-# stmtwhile -> while ( expr ) { stmtlist }
-# stmtdowhile -> do { stmtlist } while ( expr ) ;
-# stmtbreak -> break ;
-# stmtreturn -> return expr ;
-# stmtempty -> ;
 
 # exprlist -> expr exprlistcont
 # exprlist -> ''
@@ -283,10 +277,14 @@ def GetCurrentToken():
         return curToken
     else:
         print("Fin de analisis")
+        sys.exit()
+
         #exit
 
 def Error():
     print("ERROR SINTACTICO")
+    sys.exit()
+
 
 def ExpectToken(category):
     global curToken
@@ -590,7 +588,7 @@ def Opunary():
         ExpectToken('NOT')
     
 def Exprprimary():
-    if(curToken in pExprprimaryP):
+    if(curToken == 'IDENTIFIER'):
         ExpectToken('IDENTIFIER')
         ExprprimaryP()
     elif(curToken in pArray):
@@ -605,7 +603,7 @@ def Exprprimary():
 def ExprprimaryP():
     while(curToken in pExprprimaryP):
         ExpectToken('LPAR')
-        Expr()
+        Exprlist()
         ExpectToken('RPAR')
 
 def Array():
