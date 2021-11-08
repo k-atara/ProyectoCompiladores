@@ -206,58 +206,58 @@ print("Numero de filas: "+str(row))
 # lit -> litchar
 # lit -> litstr
 
-pProgram = []
-pDeflist = []
-pDeflistP = []
-pDef = []
-pVardef = []
-pVarlist = []
-pIdlist = []
-pIdlistcont = []
-pFundef = []
-pParamlist = []
-pVardeflist = []
-pVardeflistP = []
-pStmtlist = []
-pStmtlistP = []
-pStmt = []
-pStmtP = []
-pStmtIncr = []
-pStmtDecr = []
-pExprlist = []
-pExprlistcont = []
-pStmtif = []
-pElseiflist = []
-pElseiflistP = []
-pElsel = []
-pStmtwhile = []
-pStmtdowhile = []
-pStmtbreak = []
-pStmtreturn = []
-pStmtempty = []
-pExpr = []
-pExpror = []
-pExprorP = []
-pExprand = []
-pExprandP = []
-pExprcomp = []
-pExprcompP = []
-pOpcomp = []
-pExprrel = []
-pExprrelP = []
-pOprel = []
-pExpradd = []
-pExpraddP = []
-pOpadd = []
-pExprmul = []
-pExprmulP = []
-pOpmul = []
-pExprunary = []
-pOpunary = []
-pExprprimary = []
-pExprprimaryP = []
-pArray = []
-pLit = []
+pProgram = ['VAR', 'IDENTIFIER']
+pDeflist = ['VAR', 'IDENTIFIER']
+pDeflistP = ['VAR', 'IDENTIFIER']
+pDef = ['VAR', 'ID']
+pVardef = ['VAR']
+pVarlist = ['IDENTIFIER']
+pIdlist = ['IDENTIFIER']
+pIdlistcont = ['COMMA']
+pFundef = ['IDENTIFIER']
+pParamlist = ['IDENTIFIER']
+pVardeflist = ['VAR']
+pVardeflistP = ['VAR']
+pStmtlist = ['IDENTIFIER', 'INC', 'DEC', 'IF', 'WHILE', 'DO', 'BREAK', 'RETURN', 'SEMI']
+pStmtlistP = ['IDENTIFIER', 'INC', 'DEC', 'IF', 'WHILE', 'DO', 'BREAK', 'RETURN', 'SEMI']
+pStmt = ['IDENTIFIER', 'INC', 'DEC', 'IF', 'WHILE', 'DO', 'BREAK', 'RETURN', 'SEMI']
+pStmtP = ['EQUAL', 'LPAR']
+pStmtIncr = ['INC']
+pStmtDecr = ['DEC']
+pExprlist = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprlistcont = ['COMMA']
+pStmtif = ['IF']
+pElseiflist = ['ELIF']
+pElseiflistP = ['ELIF']
+pElsel = ['ELSE']
+pStmtwhile = ['WHILE']
+pStmtdowhile = ['DO']
+pStmtbreak = ['BREAK']
+pStmtreturn = ['RETURN']
+pStmtempty = ['SEMI']
+pExpr = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExpror = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprorP = ['OR']
+pExprand = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprandP = ['AND']
+pExprcomp = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprcompP = ['EQEQUAL', 'NOTEQUAL']
+pOpcomp = ['EQEQUAL', 'NOTEQUAL']
+pExprrel = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprrelP = ['LESS', 'LESSEQUAL', 'GREATER', 'GREATEREQUAL']
+pOprel = ['LESS', 'LESSEQUAL', 'GREATER', 'GREATEREQUAL']
+pExpradd = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExpraddP = ['PLUS', 'MINUS']
+pOpadd = ['PLUS', 'MINUS']
+pExprmul = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprmulP = ['STAR', 'SLASH', 'PERCENT']
+pOpmul = ['STAR', 'SLASH', 'PERCENT']
+pExprunary = ['PLUS', 'MINUS', 'NOT', 'IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pOpunary = ['PLUS', 'MINUS', 'NOT']
+pExprprimary = ['IDENTIFIER', 'LPAR', 'LSQB', 'TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
+pExprprimaryP = ['LPAR']
+pArray = ['LSQB']
+pLit = ['TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
 
 
 contador=-1
@@ -619,78 +619,5 @@ def Lit():
     elif(curToken == 'STRING'):
         ExpectToken('STRING')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-# def ():
-
-
-
+GetCurrentToken()
+Program()
