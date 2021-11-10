@@ -251,19 +251,19 @@ lEntrada=len(listaTokens)
 vEntrada = listaTokens
 
 curToken = ""
-
+#Error: línea, columna se esperaba x caracter
 #VARIABLES PARA TABLA DE SIMBOLOS
 
 class TSimbolo:
     def __init__(self, declared, tokenType, name, dataType, size, params, ret, scope ):
         self.declared = declared #verificar si ya existia ese id o no (TRUE FALSE)
-        self.tokenType = tokenType #tipo de token (id, funcion)
-        self.name = name #nombre de token
+        self.tokenType = tokenType #tipo de token (variable o funcion)
+        self.name = name #nombre o identificador del token
         self.dataType = dataType #si es un id, verificar su literal 
-        self.size = size #...
-        self.params = params #para ids es nulo, para funciones verificar su numero de parametros
-        self.ret = ret #lo que devuelve el return (si no hay return, es un void)
-        self.scope = scope #nivel 
+        self.size = size #algunos necesitan el tamaño
+        self.params = params #si es una funcion necesitamos cantidad de parametros y el tipo de cada uno, para ids es nulo, para funciones verificar su numero de parametros
+        self.ret = ret #si es una funcion(el tipo de retorno), lo que devuelve el return (si no hay return, es un void)
+        self.scope = scope #nivel de contexto 
 
 listaTSimbolos = []
 numScope=1
