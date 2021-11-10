@@ -11,6 +11,7 @@ import copy
 
 listaTokens=[]
 listaCategoria=['MULTICOM','DX','COMMENT','LPAR','RPAR','LSQB','RSQB','LBRACE','RBRACE','SEMI','COMMA','MINUS','PLUS','STAR','SLASH','PERCENT','EQEQUAL','NOTEQUAL','GREATEREQUAL','LESSEQUAL','LESS','EQUAL','GREATER','MAIN','PRINTS','AND','BREAK','DEC','DO','ELIF','ELSE','FALSE','IF','INC','NOT','OR','RETURN','TRUE','VAR','WHILE','IDENTIFIER','INTEGER','STRING','CHARACTER','CHARACTER','CHARACTER','ENTER','TAB','READLINE','SPACE','RDOUBLESLASH','CSIMPLE','CDOUBLE','ILEGAL']
+listaCategoriaSimbolo=['','','','(',')','[',']','{','}',';',',','-','+','*','/','%','==','<>','>=','<=','<','=','>',"un Identifier","un Identifier",'and','break','dec','do','elif','else','false','if','inc','not','or','return','true','var','while',"un identifier","un entero","un string","un caracter","un caracter","un caracter",'enter','tab','readline','espacio','\\','\'','\"','Ilegal']
 row = 1
 column=0
 
@@ -249,9 +250,13 @@ pLit = ['TRUE', 'FALSE', 'INTEGER', 'CHARACTER', 'STRING']
 contador=-1
 lEntrada=len(listaTokens)
 vEntrada = listaTokens
+#ε
 
 curToken = ""
-#Error: línea, columna se esperaba x caracter
+
+#VARIABLES PARA ERROR
+lTokensDeseados=[]
+
 #VARIABLES PARA TABLA DE SIMBOLOS
 
 class TSimbolo:
@@ -268,7 +273,7 @@ class TSimbolo:
 listaTSimbolos = []
 numScope=1
 
-token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
+#token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
 
 #nodo principal arbol
 nodoPadre = Node("PROGRAM")
@@ -301,8 +306,51 @@ def GetCurrentToken():
 
 #     token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
 
-def Error():
-    print("ERROR SINTACTICO")
+#Error: línea, columna se esperaba x caracter
+
+def ErrorS(categoria, token):
+    global listaCategoriaSimbolo
+    global listaCategoria
+    global vEntrada
+    global contador
+
+    print("ERROR SINTACTICO\n")
+    pos= listaCategoria.index(categoria)
+    categoriaDeseada = listaCategoriaSimbolo[pos]
+
+    pos2= listaCategoria.index(token)
+    tokenObt = listaCategoriaSimbolo[pos2]
+
+    row = vEntrada[contador].row
+    col = vEntrada[contador].column
+
+    print("Se esperaba: " + categoriaDeseada + "\nPero se encontro: "+ tokenObt + "\nen fila: " + str(row) + "\nen columna: " + str(col))
+    sys.exit()
+
+def Error(categoryList, token):
+    global listaCategoriaSimbolo
+    global listaCategoria
+    global vEntrada
+    global contador
+
+    print("ERROR SINTACTICO\n")
+    lCats=""
+    for i in range(len(categoryList)):
+        pos= listaCategoria.index(categoryList[i])
+        categoriaDeseada = listaCategoriaSimbolo[pos]
+
+        if i == 0:
+            lCats=lCats + categoriaDeseada
+        else:
+            lCats=lCats + ", " + categoriaDeseada
+
+    pos2= listaCategoria.index(token)
+    tokenObt = listaCategoriaSimbolo[pos2]
+
+    row = vEntrada[contador].row
+    col = vEntrada[contador].column
+    print("Se esperaba: " + lCats + "\nPero se encontro: "+tokenObt+ "\nen fila: " + str(row) + "\nen columna: " + str(col) )
+    
     sys.exit()
 
 def ExpectToken(category):
@@ -313,11 +361,13 @@ def ExpectToken(category):
         GetCurrentToken()
         return tokenNuevo
     else:
-        Error()
+        ErrorS(category,curToken)
     
 def Program(nodoPadre):
     while(curToken in pDeflist):
         Deflist(nodoPadre)
+    if curToken not in pDeflist:
+        nodoE= Node("ε", parent=nodoPadre)
 
 def Deflist(nodoP):
     nodo = Node("Deflist", parent=nodoP)
@@ -328,32 +378,45 @@ def DeflistP(nodoP):
         nodo = Node("DeflistP", parent=nodoP)
         Def(nodo)
         DeflistP(nodo)
+    if curToken not in pDeflistP:
+        nodoE= Node("ε", parent=nodoP)
     
 def Def(nodoP):
+    nodo = Node("Def", parent=nodoP)
     if(curToken == 'IDENTIFIER'):
-        nodo = Node("Def", parent=nodoP)
         Fundef(nodo)
     elif(curToken=='VAR'):
-        nodo = Node("Def", parent=nodoP)
-        Vardef()
+        Vardef(nodo)
 
-def Vardef():
+def Vardef(nodoP):
+    nodoPa = Node("Vardef", parent=nodoP)
+    nodo = Node("VAR", parent=nodoPa)
     ExpectToken('VAR')
-    Varlist()
+    nodo2 = Node("Varlist", parent=nodoP)
+    Varlist(nodo2)
+    nodo3 = Node(";", parent=nodoP)
     ExpectToken('SEMI')
 
-def Varlist():
-    Idlist()
+def Varlist(nodoP):
+    nodo= Node("Idlist", parent=nodoP)
+    Idlist(nodo)
 
-def Idlist():
+def Idlist(nodoP):
+    nodo = Node("Id", parent=nodoP)
     ExpectToken('IDENTIFIER')
-    Idlistcont()
+    nodo2 = Node("Idlistcont", parent=nodoP)
+    Idlistcont(nodo2)
 
-def Idlistcont():
+def Idlistcont(nodoP):
     while(curToken in pIdlistcont):
+        nodo = Node(",", parent=nodoP)
         ExpectToken('COMMA')
+        nodo2= Node("Id", parent=nodoP)
         ExpectToken('IDENTIFIER')
-        Idlistcont()
+        nodo3= Node("Idlistcont", parent=nodoP)
+        Idlistcont(nodo3)
+    if curToken not in pIdlistcont:
+        nodoE= Node("ε", parent=nodoP)
 
 def Fundef(nodoP):
     global numScope
@@ -370,309 +433,508 @@ def Fundef(nodoP):
     ExpectToken('LBRACE')
     numScope+=1
     nodo6 = Node("Vardeflist", parent=nodoPa)
-    Vardeflist()
+    Vardeflist(nodo6)
     nodo7 = Node("Stmtlist", parent=nodoPa)
-    Stmtlist()
+    Stmtlist(nodo7)
     nodo8 = Node("}", parent=nodoPa)
     ExpectToken('RBRACE')
     numScope+=1
 
 def Paramlist(nodoP):
     while(curToken in pParamlist):
-        nodo = Node("Idlist", parent=nodoP)
-        Idlist()
+        nodo = Node("Paramlist", parent=nodoP)
+        Idlist(nodo)
+    if curToken not in pParamlist:
+        nodoE= Node("ε", parent=nodoP)
 
-def Vardeflist():
-    VardeflistP()
+def Vardeflist(nodoP):
+    nodo = Node("Vardeflist", parent=nodoP)
+    VardeflistP(nodo)
 
-def VardeflistP():
+def VardeflistP(nodoP):
     while(curToken in pVardeflistP):
-        Vardef()
-        VardeflistP()
+        nodo = Node("VardeflistP", parent=nodoP)
+        Vardef(nodo)
+        VardeflistP(nodo)
+    if curToken not in pVardeflistP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Stmtlist():
-    StmtlistP()
+def Stmtlist(nodoP):
+    nodo = Node("Stmtlist", parent=nodoP)
+    StmtlistP(nodo)
 
-def StmtlistP():
+def StmtlistP(nodoP):
     while(curToken in pStmtlistP):
-        Stmt()
-        StmtlistP()
+        nodo = Node("StmtlistP", parent=nodoP)
+        Stmt(nodo)
+        StmtlistP(nodo)
+    if curToken not in pStmtlistP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Stmt():
-    if(curToken in pStmtIncr):
-        Stmtincr()
-    elif(curToken in pStmtDecr):
-        Stmtdecr()
-    elif(curToken in pStmtif):
-        Stmtif()
-    elif(curToken in pStmtwhile):
-        Stmtwhile()
-    elif(curToken in pStmtdowhile):
-        Stmtdowhile()
-    elif(curToken in pStmtbreak):
-        Stmtbreak()
-    elif(curToken in pStmtreturn):
-        Stmtreturn()
-    elif(curToken in pStmtempty):
-        Stmtempty()
+def Stmt(nodoP):
+    if curToken not in pStmt:
+        Error(pStmt,curToken)
     else:
-        ExpectToken('IDENTIFIER')
-        StmtP()
+        nodo = Node("Stmt", parent=nodoP)
+        if(curToken in pStmtIncr):
+            Stmtincr(nodo)
+        elif(curToken in pStmtDecr):
+            Stmtdecr(nodo)
+        elif(curToken in pStmtif):
+            Stmtif(nodo)
+        elif(curToken in pStmtwhile):
+            Stmtwhile(nodo)
+        elif(curToken in pStmtdowhile):
+            Stmtdowhile(nodo)
+        elif(curToken in pStmtbreak):
+            Stmtbreak(nodo)
+        elif(curToken in pStmtreturn):
+            Stmtreturn(nodo)
+        elif(curToken in pStmtempty):
+            Stmtempty(nodo)
+        else:
+            nodo2 = Node("Id", parent=nodoP)
+            ExpectToken('IDENTIFIER')
+            nodo3 = Node("StmtP", parent=nodoP)
+            StmtP(nodo3)
 
-def StmtP():
-    if(curToken == 'EQUAL'):
-        ExpectToken('EQUAL')
-        Expr()
-        ExpectToken('SEMI')
-    elif(curToken == 'LPAR'):
-        ExpectToken('LPAR')
-        Exprlist()
-        ExpectToken('RPAR')
-        ExpectToken('SEMI')
+def StmtP(nodoP):
+    if curToken not in pStmtP:
+        Error(pStmtP,curToken)
+    else:
+        if(curToken == 'EQUAL'):
+            nodo = Node("=", parent=nodoP)
+            ExpectToken('EQUAL')
+            nodo2 = Node("Expr", parent=nodoP)
+            Expr(nodo2)
+            nodo3 = Node(";", parent=nodoP)
+            ExpectToken('SEMI')
+        elif(curToken == 'LPAR'):
+            nodo4 = Node("(", parent=nodoP)
+            ExpectToken('LPAR')
+            nodo5 = Node("Exprlist", parent=nodoP)
+            Exprlist(nodo5)
+            nodo6 = Node(")", parent=nodoP)
+            ExpectToken('RPAR')
+            nodo7 = Node(";", parent=nodoP)
+            ExpectToken('SEMI')
 
-def Stmtincr():
+def Stmtincr(nodoP):
+    nodoPa = Node("Stmtincr", parent=nodoP) 
+    nodo = Node("inc", parent=nodoPa)
     ExpectToken('INC')
+    nodo2 = Node("Id", parent=nodoPa)
     ExpectToken('IDENTIFIER')
+    nodo3 = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
-def Stmtdecr():
+def Stmtdecr(nodoP):
+    nodoPa = Node("Stmtdecr", parent=nodoP)
+    nodo = Node("dec", parent=nodoPa)
     ExpectToken('DEC')
+    nodo2 = Node("Id", parent=nodoPa)
     ExpectToken('IDENTIFIER')
+    nodo3 = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
-def Exprlist():
+def Exprlist(nodoP):
     while(curToken in pExprlist):
-        Expr()
-        Exprlistcont()
+        nodo = Node("Exprlist", parent=nodoP)
+        Expr(nodo)
+        Exprlistcont(nodo)
+    if curToken not in pExprlist:
+        nodoE= Node("ε", parent=nodoP)
 
-def Exprlistcont():
+def Exprlistcont(nodoP):
     while(curToken in pExprlistcont):
+        nodo = Node(",", parent=nodoP)
         ExpectToken('COMMA')
-        Expr()
-        Exprlistcont()
+        nodo2 = Node("Exprlistcont", parent=nodoP)
+        Expr(nodo2)
+        Exprlistcont(nodo2)
+    if curToken not in pExprlistcont:
+        nodoE= Node("ε", parent=nodoP)
 
-def Stmtif():
+def Stmtif(nodoP):
     global numScope
+    nodoPa = Node("Stmtif", parent=nodoP)
+    nodo = Node("if", parent=nodoPa)
     ExpectToken('IF')
+    nodo2 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
-    Expr()
+    nodo3 = Node("Expr", parent=nodoPa)
+    Expr(nodo3)
+    nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
+    nodo5 = Node("{", parent=nodoPa)
     ExpectToken('LBRACE')
     numScope+=1
-    Stmtlist()
+    nodo6 = Node("Stmtlist", parent=nodoPa)
+    Stmtlist(nodo6)
+    nodo7 = Node("}", parent=nodoPa)
     ExpectToken('RBRACE')
     numScope+=1
-    Elseiflist()
-    Elsel()
+    nodo8 = Node("Elseiflist", parent=nodoPa)
+    Elseiflist(nodo8)
+    nodo9 = Node("Else", parent=nodoPa)
+    Elsel(nodo9)
 
-def Elseiflist():
-    ElseiflistP()
+def Elseiflist(nodoP):
+    nodo = Node("ElseiflistP", parent=nodoP)
+    ElseiflistP(nodo)
 
-def ElseiflistP():
+def ElseiflistP(nodoP):
     global numScope
     while(curToken in pElseiflistP):
+        nodo = Node("elif", parent=nodoP)
         ExpectToken('ELIF')
+        nodo2 = Node("(", parent=nodoP)
         ExpectToken('LPAR')
-        Expr()
+        nodo3 = Node("Expr", parent=nodoP)
+        Expr(nodo3)
+        nodo4 = Node(")", parent=nodoP)
         ExpectToken('RPAR')
+        nodo5 = Node("{", parent=nodoP)
         ExpectToken('LBRACE')
         numScope+=1
-        Stmtlist()
+        nodo6 = Node("Stmtlist", parent=nodoP)
+        Stmtlist(nodo6)
+        nodo7 = Node("}", parent=nodoP)
         ExpectToken('RBRACE')
         numScope+=1
-        ElseiflistP()
+        nodo8 = Node("EsleiflistP", parent=nodoP)
+        ElseiflistP(nodo8)
+    if curToken not in pElseiflistP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Elsel():
+def Elsel(nodoP):
     global numScope 
     while(curToken in pElsel):
+        nodo = Node("else", parent=nodoP)
         ExpectToken('ELSE')
+        nodo2 = Node("{", parent=nodoP)
         ExpectToken('LBRACE')
         numScope+=1
-        Stmtlist()
+        nodo3 = Node("Stmtlist", parent=nodoP)
+        Stmtlist(nodo3)
+        nodo4 = Node("}", parent=nodoP)
         ExpectToken('RBRACE')
         numScope+=1
+    if curToken not in pElsel:
+        nodoE= Node("ε", parent=nodoP)
 
-def Stmtwhile():
+def Stmtwhile(nodoP):
     global numScope
+    nodoPa = Node("Stmtwhile", parent=nodoP)
+    nodo = Node("while", parent=nodoPa)
     ExpectToken('WHILE')
+    nodo2 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
-    Expr()
+    nodo3 = Node("Expr", parent=nodoPa)
+    Expr(nodo3)
+    nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
+    nodo5 = Node("}", parent=nodoPa)
     ExpectToken('LBRACE')
     numScope+=1
-    Stmtlist()
+    nodo6 = Node("Stmtlist", parent=nodoPa) 
+    Stmtlist(nodo6)
+    nodo7 = Node("}", parent=nodoPa)
     ExpectToken('RBRACE')
     numScope+=1
 
-def Stmtdowhile():
+def Stmtdowhile(nodoP):
     global numScope
+    nodoPa = Node("Stmtdowhile", parent=nodoP)
+    nodo = Node("do", parent=nodoPa)
     ExpectToken('DO')
+    nodo2 = Node("{", parent=nodoPa)
     ExpectToken('LBRACE')
     numScope+=1
-    Stmtlist()
+    nodo3 = Node("Stmtlist", parent=nodoPa)
+    Stmtlist(nodo3)
+    nodo4 = Node("}", parent=nodoPa)
     ExpectToken('RBRACE')
     numScope+=1
+    nodo5 = Node("while", parent=nodoPa)
     ExpectToken('WHILE')
+    nodo6 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
-    Expr()
+    nodo7 = Node("Expr", parent=nodoPa)
+    Expr(nodo7)
+    nodo8 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
+    nodo9 = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
-def Stmtbreak():
+def Stmtbreak(nodoP):
+    nodoPa = Node("Stmtbreak", parent=nodoP)
+    nodo = Node("break", parent=nodoPa)
     ExpectToken('BREAK')
+    nodo2 = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
-def Stmtreturn():
+def Stmtreturn(nodoP):
+    nodoPa = Node("Stmtreturn", parent=nodoP)
+    nodo = Node("return", parent=nodoPa)
     ExpectToken('RETURN')
-    Expr()
+    nodo2 = Node("Expr", parent=nodoPa)
+    Expr(nodo2)
+    nodo3 = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
-def Stmtempty():
+def Stmtempty(nodoP):
+    nodoPa = Node(";", parent=nodoP)
+    nodo = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
-def Expr():
-    Expror()
+def Expr(nodoP):
+    nodo = Node("Expror", parent=nodoP)
+    Expror(nodo)
 
-def Expror():
-    Exprand() 
-    ExprorP()
+def Expror(nodoP):
+    nodo = Node("Exprand", parent=nodoP)
+    Exprand(nodo) 
+    nodo2 = Node("ExprorP", parent=nodoP)
+    ExprorP(nodo2)
 
-def ExprorP():
+def ExprorP(nodoP):
     while(curToken in pExprorP):
+        nodo = Node("or", parent=nodoP)
         ExpectToken('OR')
-        Exprand()
-        ExprorP()
+        nodo2 = Node("Exprand", parent=nodoP)
+        Exprand(nodo2)
+        nodo3 = Node("ExprorP", parent=nodoP)
+        ExprorP(nodo3)
+    if curToken not in pExprorP:
+        nodoE= Node("ε", parent=nodoP)
     
-def Exprand():
-    Exprcomp()
-    ExprandP()
+def Exprand(nodoP):
+    nodo = Node("Exprcomp", parent=nodoP)
+    Exprcomp(nodo)
+    nodo2 = Node("ExprandP", parent=nodoP)
+    ExprandP(nodo2)
 
-def ExprandP():
+def ExprandP(nodoP):
     while(curToken in pExprandP):
+        nodo = Node("and", parent=nodoP)
         ExpectToken('AND')
-        Exprcomp()
-        ExprandP()
+        nodo2 = Node("Exprcomp", parent=nodoP)
+        Exprcomp(nodo2)
+        nodo3 = Node("ExprandP", parent=nodoP)
+        ExprandP(nodo3)
+    if curToken not in pExprandP:
+        nodoE= Node("ε", parent=nodoP)
     
-def Exprcomp():
-    Exprrel()
-    ExprcompP()
+def Exprcomp(nodoP):
+    nodo = Node("Exprrel", parent=nodoP)
+    Exprrel(nodo)
+    nodo2 = Node("ExprcompP", parent=nodoP)
+    ExprcompP(nodo2)
 
-def ExprcompP():
+def ExprcompP(nodoP):
     while(curToken in pExprcompP):
-        Opcomp()
-        Exprrel()
-        ExprcompP()
+        nodo = Node("Opcomp", parent=nodoP)
+        Opcomp(nodo)
+        nodo2 = Node("Exprrel", parent=nodoP)
+        Exprrel(nodo2)
+        nodo3 = Node("ExprcompP", parent=nodoP)
+        ExprcompP(nodo3)
+    if curToken not in pExprcompP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Opcomp():
-    if(curToken == 'EQEQUAL'):
-        ExpectToken('EQEQUAL')
+def Opcomp(nodoP):
+    if curToken not in pOpcomp:
+        Error(pOpcomp,curToken)
     else:
-        ExpectToken('NOTEQUAL')
+        if(curToken == 'EQEQUAL'):
+            nodo = Node("==", parent=nodoP)
+            ExpectToken('EQEQUAL')
+        else:
+            nodo2 = Node("<>", parent=nodoP)
+            ExpectToken('NOTEQUAL')
 
-def Exprrel():
-    Expradd()
-    ExprrelP()
+def Exprrel(nodoP):
+    nodo = Node("Expradd", parent=nodoP)
+    Expradd(nodo)
+    nodo2 = Node("ExprrelP", parent=nodoP)
+    ExprrelP(nodo2)
 
-def ExprrelP():
+def ExprrelP(nodoP):
     while(curToken in pExprrelP):
-        Oprel()
-        Expradd()
-        ExprrelP()
+        nodo = Node("Oprel", parent=nodoP)
+        Oprel(nodo)
+        nodo2 = Node("Expradd", parent=nodoP)
+        Expradd(nodo2)
+        nodo3 = Node("ExprrelP", parent=nodoP)
+        ExprrelP(nodo3)
+    if curToken not in pExprrelP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Oprel():
-    if(curToken == 'LESS'):
-        ExpectToken('LESS')
-    elif(curToken == 'LESSEQUAL'):
-        ExpectToken('LESSEQUAL')
-    elif(curToken == 'GREATER'):
-        ExpectToken('GREATER')
-    elif(curToken == 'GREATEREQUAL'):
-        ExpectToken('GREATEREQUAL')
+def Oprel(nodoP):
+    if curToken not in pOprel:
+        Error(pOprel,curToken)
+    else:
+        if(curToken == 'LESS'):
+            nodo = Node("<", parent=nodoP)
+            ExpectToken('LESS')
+        elif(curToken == 'LESSEQUAL'):
+            nodo2 = Node("<=", parent=nodoP)
+            ExpectToken('LESSEQUAL')
+        elif(curToken == 'GREATER'):
+            nodo3 = Node(">", parent=nodoP)
+            ExpectToken('GREATER')
+        elif(curToken == 'GREATEREQUAL'):
+            nodo4 = Node(">=", parent=nodoP)
+            ExpectToken('GREATEREQUAL')
 
-def Expradd():
-    Exprmul()
-    ExpraddP()
+def Expradd(nodoP):
+    nodo = Node("Exprmul", parent=nodoP)
+    Exprmul(nodo)
+    nodo2 = Node("ExpraddP", parent=nodoP)
+    ExpraddP(nodo2)
 
-def ExpraddP():
+def ExpraddP(nodoP):
     while(curToken in pExpraddP):
-        Opadd()
-        Exprmul()
-        ExpraddP()
+        nodo = Node("Opadd", parent=nodoP)
+        Opadd(nodo)
+        nodo2 = Node("Exprmul", parent=nodoP)
+        Exprmul(nodo2)
+        nodo3 = Node("ExpraddP", parent=nodoP)
+        ExpraddP(nodo3)
+    if curToken not in pExpraddP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Opadd():
-    if(curToken == 'PLUS'):
-        ExpectToken('PLUS')
-    elif(curToken == 'MINUS'):
-        ExpectToken('MINUS')
+def Opadd(nodoP):
+    if curToken not in pOpadd:
+        Error(pOpadd,curToken)
+    else:
+        if(curToken == 'PLUS'):
+            nodo = Node("+", parent=nodoP)
+            ExpectToken('PLUS')
+        elif(curToken == 'MINUS'):
+            nodo2 = Node("-", parent=nodoP)
+            ExpectToken('MINUS')
 
-def Exprmul():
-    Exprunary()
-    ExprmulP()
+def Exprmul(nodoP):
+    nodo = Node("Exprunary", parent=nodoP)
+    Exprunary(nodo)
+    nodo2 = Node("ExprmulP", parent=nodoP)
+    ExprmulP(nodo2)
 
-def ExprmulP():
+def ExprmulP(nodoP):
     while(curToken in pExprmulP):
-        Opmul()
-        Exprunary()
-        ExprmulP()
+        nodo = Node("Opmul", parent=nodoP)
+        Opmul(nodo)
+        nodo2 = Node("Exprunary", parent=nodoP)
+        Exprunary(nodo2)
+        nodo3 = Node("ExprmulP", parent=nodoP)
+        ExprmulP(nodo3)
+    if curToken not in pExprmulP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Opmul():
-    if(curToken == 'STAR'):
-        ExpectToken('STAR')
-    elif(curToken == 'SLASH'):
-        ExpectToken('SLASH')
-    elif(curToken == 'PERCENT'):
-        ExpectToken('PERCENT')
-
-def Exprunary():
-    if(curToken in pOpunary):
-        Opunary()
-        Exprunary()
+def Opmul(nodoP):
+    if curToken not in pOpmul:
+        Error(pOpmul,curToken)
     else:
-        Exprprimary()
+        if(curToken == 'STAR'):
+            nodo = Node("*", parent=nodoP)
+            ExpectToken('STAR')
+        elif(curToken == 'SLASH'):
+            nodo2 = Node("/", parent=nodoP)
+            ExpectToken('SLASH')
+        elif(curToken == 'PERCENT'):
+            nodo3 = Node("%", parent=nodoP)
+            ExpectToken('PERCENT')
 
-def Opunary():
-    if(curToken == 'PLUS'):
-        ExpectToken('PLUS')
-    elif(curToken == 'MINUS'):
-        ExpectToken('MINUS')
-    elif(curToken == 'NOT'):
-        ExpectToken('NOT')
+def Exprunary(nodoP):
+    if curToken not in pExprunary:
+        Error(pExprunary,curToken)
+    else:
+        if(curToken in pOpunary):
+            nodo = Node("Opunary", parent=nodoP)
+            Opunary(nodo)
+            nodo2 = Node("Exprunary", parent=nodoP)
+            Exprunary(nodo2)
+        else:
+            nodo3 = Node("Exprprimary", parent=nodoP)
+            Exprprimary(nodo3)
+
+def Opunary(nodoP):
+    if curToken not in pOpunary:
+        Error(pOpunary,curToken)
+    else:
+        if(curToken == 'PLUS'):
+            nodo = Node("+", parent=nodoP)
+            ExpectToken('PLUS')
+        elif(curToken == 'MINUS'):
+            nodo2 = Node("-", parent=nodoP)
+            ExpectToken('MINUS')
+        elif(curToken == 'NOT'):
+            nodo3 = Node("not", parent=nodoP)
+            ExpectToken('NOT')
     
-def Exprprimary():
-    if(curToken == 'IDENTIFIER'):
-        ExpectToken('IDENTIFIER')
-        ExprprimaryP()
-    elif(curToken in pArray):
-        Array()
-    elif(curToken in pLit):
-        Lit()
+def Exprprimary(nodoP):
+    if curToken not in pExprprimary:
+        Error(pExprprimary,curToken)
     else:
-        ExpectToken('LPAR')
-        Expr()
-        ExpectToken('RPAR')
+        if(curToken == 'IDENTIFIER'):
+            nodo = Node("Id", parent=nodoP)
+            ExpectToken('IDENTIFIER')
+            nodo2 = Node("ExprprimaryP", parent=nodoP)
+            ExprprimaryP(nodo2)
+        elif(curToken in pArray):
+            nodo3 = Node("array", parent=nodoP)
+            Array(nodo3)
+        elif(curToken in pLit):
+            nodo4 = Node("lit", parent=nodoP)
+            Lit(nodo4)
+        else:
+            nodo5 = Node("(", parent=nodoP)
+            ExpectToken('LPAR')
+            nodo6 = Node("Expr", parent=nodoP)
+            Expr(nodo6)
+            nodo7 = Node(")", parent=nodoP)
+            ExpectToken('RPAR')
 
-def ExprprimaryP():
+def ExprprimaryP(nodoP):
     while(curToken in pExprprimaryP):
+        nodo = Node("(", parent=nodoP)
         ExpectToken('LPAR')
-        Exprlist()
+        nodo2 = Node("Exprlist", parent=nodoP)
+        Exprlist(nodo2)
+        nodo3 = Node(")", parent=nodoP)
         ExpectToken('RPAR')
+    if curToken not in pExprprimaryP:
+        nodoE= Node("ε", parent=nodoP)
 
-def Array():
+def Array(nodoP):
+    nodo = Node("[", parent=nodoP)
     ExpectToken('LSQB')
-    Exprlist()
+    nodo2 = Node("Exprlist", parent=nodoP)
+    Exprlist(nodo2)
+    nodo3 = Node("]", parent=nodoP)
     ExpectToken('RSQB')
 
-def Lit():
-    if(curToken == 'TRUE'):
-        ExpectToken('TRUE')
-    elif(curToken == 'FALSE'):
-        ExpectToken('FALSE')
-    elif(curToken == 'INTEGER'):
-        ExpectToken('INTEGER')
-    elif(curToken == 'CHARACTER'):
-        ExpectToken('CHARACTER')
-    elif(curToken == 'STRING'):
-        ExpectToken('STRING')
+def Lit(nodoP):
+    if curToken not in pLit:
+        Error(pLit,curToken)
+    else:
+        if(curToken == 'TRUE'):
+            nodo = Node("bool", parent=nodoP)
+            ExpectToken('TRUE')
+        elif(curToken == 'FALSE'):
+            nodo2 = Node("bool", parent=nodoP)
+            ExpectToken('FALSE')
+        elif(curToken == 'INTEGER'):
+            nodo3 = Node("integer", parent=nodoP)
+            ExpectToken('INTEGER')
+        elif(curToken == 'CHARACTER'):
+            nodo4 = Node("character", parent=nodoP)
+            ExpectToken('CHARACTER')
+        elif(curToken == 'STRING'):
+            nodo5 = Node("string", parent=nodoP)
+            ExpectToken('STRING')
 
 GetCurrentToken()
 Program(nodoPadre)
