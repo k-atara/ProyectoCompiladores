@@ -1,6 +1,7 @@
 from os import pipe
 from tkinter import *
 from tkinter.filedialog import asksaveasfilename, askopenfilename
+from anytree import Node, RenderTree
 import subprocess
 import sys
 import re
@@ -251,6 +252,28 @@ vEntrada = listaTokens
 
 curToken = ""
 
+#VARIABLES PARA TABLA DE SIMBOLOS
+
+class TSimbolo:
+    def __init__(self, declared, tokenType, name, dataType, size, params, ret, scope ):
+        self.declared = declared
+        self.tokenType = tokenType
+        self.name = name
+        self.dataType = dataType
+        self.size = size
+        self.params = params
+        self.ret = ret
+        self.scope = scope
+
+listaTSimbolos = []
+numScope=1
+
+token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
+
+#nodo principal arbol
+nodoPadre = Node("PROGRAM")
+
+
 def GetCurrentToken():
     global contador
     global curToken
@@ -264,14 +287,23 @@ def GetCurrentToken():
         return curToken
     else:
         print("Fin de analisis")
-        sys.exit()
+        #sys.exit()
 
-        #exit
+# def InsertSymbolTable():
+#     global curToken
+#     global contador
+#     global vEntrada
+#     global listaTSimbolos
+#     tamListaTS = len(listaTSimbolos)
+#     for i in tamListaTS:
+#         if(listaTSimbolos[i].name !=) 
+#     if()
+
+#     token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
 
 def Error():
     print("ERROR SINTACTICO")
     sys.exit()
-
 
 def ExpectToken(category):
     global curToken
@@ -283,22 +315,26 @@ def ExpectToken(category):
     else:
         Error()
     
-def Program():
+def Program(nodoPadre):
     while(curToken in pDeflist):
-        Deflist()
+        Deflist(nodoPadre)
 
-def Deflist():
-    DeflistP()
+def Deflist(nodoP):
+    nodo = Node("Deflist", parent=nodoP)
+    DeflistP(nodo)
 
-def DeflistP():
+def DeflistP(nodoP):
     while(curToken in pDeflistP):
-        Def()
-        DeflistP()
+        nodo = Node("DeflistP", parent=nodoP)
+        Def(nodo)
+        DeflistP(nodo)
     
-def Def():
+def Def(nodoP):
     if(curToken == 'IDENTIFIER'):
-        Fundef()
+        nodo = Node("Def", parent=nodoP)
+        Fundef(nodo)
     elif(curToken=='VAR'):
+        nodo = Node("Def", parent=nodoP)
         Vardef()
 
 def Vardef():
@@ -319,18 +355,31 @@ def Idlistcont():
         ExpectToken('IDENTIFIER')
         Idlistcont()
 
-def Fundef():
+def Fundef(nodoP):
+    global numScope
+    nodoPa = Node("Fundef", parent=nodoP)
+    nodo = Node("Id", parent=nodoPa)
     ExpectToken('IDENTIFIER')
+    nodo2 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
-    Paramlist()
+    nodo3 = Node("Paramlist", parent=nodoPa)
+    Paramlist(nodo3)
+    nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
+    nodo5 = Node("{", parent=nodoPa)
     ExpectToken('LBRACE')
+    numScope+=1
+    nodo6 = Node("Vardeflist", parent=nodoPa)
     Vardeflist()
+    nodo7 = Node("Stmtlist", parent=nodoPa)
     Stmtlist()
+    nodo8 = Node("}", parent=nodoPa)
     ExpectToken('RBRACE')
+    numScope+=1
 
-def Paramlist():
+def Paramlist(nodoP):
     while(curToken in pParamlist):
+        nodo = Node("Idlist", parent=nodoP)
         Idlist()
 
 def Vardeflist():
@@ -403,13 +452,16 @@ def Exprlistcont():
         Exprlistcont()
 
 def Stmtif():
+    global numScope
     ExpectToken('IF')
     ExpectToken('LPAR')
     Expr()
     ExpectToken('RPAR')
     ExpectToken('LBRACE')
+    numScope+=1
     Stmtlist()
     ExpectToken('RBRACE')
+    numScope+=1
     Elseiflist()
     Elsel()
 
@@ -417,37 +469,49 @@ def Elseiflist():
     ElseiflistP()
 
 def ElseiflistP():
+    global numScope
     while(curToken in pElseiflistP):
         ExpectToken('ELIF')
         ExpectToken('LPAR')
         Expr()
         ExpectToken('RPAR')
         ExpectToken('LBRACE')
+        numScope+=1
         Stmtlist()
         ExpectToken('RBRACE')
+        numScope+=1
         ElseiflistP()
 
 def Elsel():
+    global numScope 
     while(curToken in pElsel):
         ExpectToken('ELSE')
         ExpectToken('LBRACE')
+        numScope+=1
         Stmtlist()
         ExpectToken('RBRACE')
+        numScope+=1
 
 def Stmtwhile():
+    global numScope
     ExpectToken('WHILE')
     ExpectToken('LPAR')
     Expr()
     ExpectToken('RPAR')
     ExpectToken('LBRACE')
+    numScope+=1
     Stmtlist()
     ExpectToken('RBRACE')
+    numScope+=1
 
 def Stmtdowhile():
+    global numScope
     ExpectToken('DO')
     ExpectToken('LBRACE')
+    numScope+=1
     Stmtlist()
     ExpectToken('RBRACE')
+    numScope+=1
     ExpectToken('WHILE')
     ExpectToken('LPAR')
     Expr()
@@ -611,4 +675,10 @@ def Lit():
         ExpectToken('STRING')
 
 GetCurrentToken()
-Program()
+Program(nodoPadre)
+
+print("\n")
+print("Árbol sintáctico")
+print("\n")
+for pre, fill, node in RenderTree(nodoPadre):
+    print("%s%s" % (pre, node.name))
