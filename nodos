@@ -1,0 +1,28 @@
+nodo
+    lista de hijos nodo
+    token anchortoken
+    add() añadir a lista de hijos un objeto nodo
+    
+
+main(){
+    var x;
+}
+var c;
+
+fun(){
+    var y;
+    if(x>2){
+        var a;
+    }
+    var m;
+}
+var o;
+
+main 1
+x 2
+c 3
+fun 3
+y 4
+a 5
+m 6
+o 7
