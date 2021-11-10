@@ -256,14 +256,14 @@ curToken = ""
 
 class TSimbolo:
     def __init__(self, declared, tokenType, name, dataType, size, params, ret, scope ):
-        self.declared = declared
-        self.tokenType = tokenType
-        self.name = name
-        self.dataType = dataType
-        self.size = size
-        self.params = params
-        self.ret = ret
-        self.scope = scope
+        self.declared = declared #verificar si ya existia ese id o no (TRUE FALSE)
+        self.tokenType = tokenType #tipo de token (id, funcion)
+        self.name = name #nombre de token
+        self.dataType = dataType #si es un id, verificar su literal 
+        self.size = size #...
+        self.params = params #para ids es nulo, para funciones verificar su numero de parametros
+        self.ret = ret #lo que devuelve el return (si no hay return, es un void)
+        self.scope = scope #nivel 
 
 listaTSimbolos = []
 numScope=1
