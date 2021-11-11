@@ -11,7 +11,8 @@ main(b, d, e, c) {
 }
 
 pepe(){
-    var pepe;
+    var pepe,kike;
+    pepe=kike;
     return pepe;
 }
 
@@ -45,3 +46,44 @@ funP(){
     return [2,3,5];
 }
 
+(*
+funcion returns
+    si hay return
+        si:
+            si es ID
+                buscar id en tabla de simbolos
+                return tipoDato de id
+            si es int
+                return int
+            si es char
+                return char
+            si es true | si es false
+                return bool
+            si es string
+                return string
+        no:
+    return void
+
+
+funcion tipoDato
+    buscar id en tabla de simbolos
+    si no esta en tabla de simbolos:
+        morir programa
+    si SI esta:
+        si es funcion:
+            buscar nombre de funcion en tabla de simbolos
+            si SI esta:
+                buscar valor del return de la funcion
+                devolver return de la funcion
+            si NO esta:
+                muere programa
+        si es var:
+            buscar nombre de var/id en tabla de simbolos
+            si SI esta:
+                buscar tipo de dato del var
+                devolver tipo de dato del var
+            si NO esta:
+                muere programa
+        si es otra cosa (literales):
+            devolver literal
+*)
