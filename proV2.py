@@ -287,7 +287,7 @@ def GetCurrentToken():
     global lEntrada
     if(contador<lEntrada):
         curToken=vEntrada[contador].category
-        print(str(curToken))
+        #print(str(curToken))
         #print(vEntrada[contador].categoria)
         return curToken
     else:
@@ -367,10 +367,9 @@ def Error(categoryList, token):
 def ExpectToken(category):
     global curToken
     global vEntrada
-    if(curToken == category):
+    if(curToken == category):    
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
-        
         return tokenNuevo
     else:
         ErrorS(category,curToken)
@@ -387,7 +386,12 @@ tDatoToken = ""
 tablaSimbolos = []
 boolParam = False
 boolVar = False
+boolFun = False
+boolReturn = False
 contadorParam = 0
+tokenActualReturn = Token
+nombreFunReturn = ""
+tokenReturnCategory = ""
 
 def VerificarExistencia(token):
     global tablaSimbolos
@@ -423,6 +427,32 @@ def crearFun(token):
     declared = VerificarExistencia(token)
     objeto = TSimbolo(False, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
     tablaSimbolos.append(objeto)
+    
+def returnReturn():
+    global tokenActualReturn
+    global boolReturn
+    global nombreFunReturn
+    global tokenReturnCategory
+    global tablaSimbolos
+    
+    print(nombreFunReturn)
+    if(boolReturn == True):
+        if(tokenReturnCategory == "LSQB"):
+            print("ARRAY")
+        elif(tokenReturnCategory == "LPAR"):
+            print("OPER")
+        elif(tokenActualReturn.category == "IDENTIFIER"):
+            print("ID")
+        elif(tokenActualReturn.category == "INTEGER"):
+            print("INT")
+        elif(tokenActualReturn.category == "CHARACTER"):
+            print("CHAR")
+        elif(tokenActualReturn.category == "STRING"):
+            print("STRING")
+        elif(tokenActualReturn.category == "TRUE" or tokenActualReturn.category == "FALSE"):
+            print("BOOL")
+    else:
+        print("Void")
     
 #---------------------------------------------------------------------------------------- 
 
@@ -493,9 +523,12 @@ def Idlistcont(nodoP):
 def Fundef(nodoP):
     global numScope
     global boolParam
+    global nombreFunReturn
+    global boolReturn
     nodoPa = Node("Fundef", parent=nodoP)
     nodo = Node("Id", parent=nodoPa)
     crearFun(vEntrada[contador])
+    nombreFunReturn = vEntrada[contador].lexema
     ExpectToken('IDENTIFIER')
     nodo2 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
@@ -512,7 +545,9 @@ def Fundef(nodoP):
     nodo7 = Node("Stmtlist", parent=nodoPa)
     Stmtlist(nodo7)
     nodo8 = Node("}", parent=nodoPa)
+    returnReturn()
     ExpectToken('RBRACE')
+    boolReturn = False
     numScope+=1
 
 def Paramlist(nodoP):
@@ -755,6 +790,8 @@ def Stmtbreak(nodoP):
     ExpectToken('SEMI')
 
 def Stmtreturn(nodoP):
+    global boolReturn
+    boolReturn = True
     nodoPa = Node("Stmtreturn", parent=nodoP)
     nodo = Node("return", parent=nodoPa)
     ExpectToken('RETURN')
@@ -955,21 +992,30 @@ def Opunary(nodoP):
             ExpectToken('NOT')
     
 def Exprprimary(nodoP):
+    global vEntrada
+    global contador
+    global tokenActualReturn
+    global tokenReturnCategory
+    
     if curToken not in pExprprimary:
         Error(pExprprimary,curToken)
     else:
         if(curToken == 'IDENTIFIER'):
+            tokenActualReturn = vEntrada[contador]
             nodo = Node("Id", parent=nodoP)
             ExpectToken('IDENTIFIER')
             nodo2 = Node("ExprprimaryP", parent=nodoP)
             ExprprimaryP(nodo2)
         elif(curToken in pArray):
+            tokenReturnCategory = "LSQB"
             nodo3 = Node("array", parent=nodoP)
             Array(nodo3)
         elif(curToken in pLit):
+            tokenActualReturn = vEntrada[contador]
             nodo4 = Node("lit", parent=nodoP)
             Lit(nodo4)
         else:
+            tokenReturnCategory = "LPAR"
             nodo5 = Node("(", parent=nodoP)
             ExpectToken('LPAR')
             nodo6 = Node("Expr", parent=nodoP)

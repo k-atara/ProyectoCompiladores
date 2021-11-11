@@ -12,6 +12,7 @@ main(b, d, e, c) {
 
 pepe(){
     var pepe;
+    return pepe;
 }
 
 juan(parm1, param2){
@@ -20,4 +21,14 @@ juan(parm1, param2){
     } else {
         prints("This program sucks!\n");
     }
+    return 'a';
+}
+
+kim(){
+    return (1 + 2);
+}
+
+bye2(){
+    var mundo;
+    return [1,2,3];
 }
