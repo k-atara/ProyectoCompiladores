@@ -4,7 +4,46 @@
 *)
 
 
-main() {
+main(b) {
+    var a, c;
     prints("hello, world\n");
-    return 42;
+
+    a = 12;
+
+    a = 15;
+
+    return x * x;
+    return n * recursive_factorial(n - 1);
 }
+
+funcion returns
+    si hay return
+        si:
+            si es ID
+                buscar id en tabla de simbolos
+                return tipoDato de id
+            si es int
+                return int
+            si es char
+                return char
+            si es true | si es false
+                return bool
+            si es string
+                return string
+        no:
+    return void
+
+
+funcion tipoDato
+    buscar id en tabla de simbolos
+    si no esta en tabla de simbolos:
+        morir programa
+    si SI esta:
+        si es funcion:
+            buscar valor del return de la funcion
+            devolver return de la funcion
+        si es var:
+            buscar tipo de dato del var
+            devolver tipo de dato del var
+        si es otra cosa (literales):
+            devolver literal
