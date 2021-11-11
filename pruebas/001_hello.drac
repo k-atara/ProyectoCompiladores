@@ -3,12 +3,25 @@
    (C) 2021 Ariel Ortiz, ITESM CEM.
 *)
 
+main() {
+    var a,b,c,d, e,f,g;
+    a=1;
+    b='H';
+    c="holis";
+    d=true;
+    e=[8,5];
+    f= main();
+    g=a;
 
-main(b, d, e, c) {
-    var start, ff, temp;
-    prints("hello, world\n");
-    return 42;
 }
+
+(*
+    a=1;
+    a='A';
+    a="AAA";
+    a=[1];
+    a=main();
+    a=a;
 
 pepe(){
     var pepe,kike;
@@ -26,7 +39,9 @@ juan(parm1, param2){
 }
 
 kim(){
-    return (1 + 2);
+    var oi, ou, ot;
+    oi = juan(ou, ot);
+    return oi;
 }
 
 bye2(){
@@ -45,6 +60,8 @@ void(){
 funP(){
     return [2,3,5];
 }
+*)
+
 
 (*
 funcion returns

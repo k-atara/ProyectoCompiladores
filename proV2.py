@@ -393,14 +393,11 @@ tokenActualReturn = Token
 nombreFunReturn = ""
 tokenReturnCategory = ""
 
+tokActualAssign= False
+nombreVar = ""
+
 def VerificarExistencia(token):
     global tablaSimbolos
-    """
-    if(tablaSimbolos.name == token.lexema and tablaSimbolos.name == token.lexema):
-        return True
-    else: 
-        return False  
-    """ 
     
 def lastFunction():
     global contadorParam
@@ -417,15 +414,15 @@ def lastFunction():
 def crearVar(token):
     declared = VerificarExistencia(token)
     if(boolVar==True):
-        objeto = TSimbolo(False, "variable", token.lexema, "*", "*", "-", "-", numScope)
+        objeto = TSimbolo(True, "variable", token.lexema, "*", "*", "-", "-", numScope)
     elif(boolParam==True):
-        objeto = TSimbolo(False, "parametro", token.lexema, "*", "*", "-", "-", numScope)
+        objeto = TSimbolo(True, "parametro", token.lexema, "*", "*", "-", "-", numScope)
     tablaSimbolos.append(objeto)
     
 def crearFun(token):
     global contadorParam
     declared = VerificarExistencia(token)
-    objeto = TSimbolo(False, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
+    objeto = TSimbolo(True, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
     tablaSimbolos.append(objeto)
     
 def returnReturn():
@@ -532,6 +529,7 @@ def Fundef(nodoP):
     global boolReturn
     nodoPa = Node("Fundef", parent=nodoP)
     nodo = Node("Id", parent=nodoPa)
+    print(RenderTree(nodo.parent.parent.parent.parent.parent))
     crearFun(vEntrada[contador])
     nombreFunReturn = vEntrada[contador].lexema
     ExpectToken('IDENTIFIER')
@@ -551,6 +549,7 @@ def Fundef(nodoP):
     Stmtlist(nodo7)
     nodo8 = Node("}", parent=nodoPa)
     returnReturn()
+#    print((nodo3.children[0].children[1].children))
     ExpectToken('RBRACE')
     boolReturn = False
     numScope+=1
@@ -592,6 +591,7 @@ def StmtlistP(nodoP):
         nodoE= Node("ε", parent=nodoP)
 
 def Stmt(nodoP):
+    global nombreVar
     if curToken not in pStmt:
         Error(pStmt,curToken)
     else:
@@ -614,22 +614,64 @@ def Stmt(nodoP):
             Stmtempty(nodo)
         else:
             nodo2 = Node("Id", parent=nodoP)
+            nombreVar = vEntrada[contador].lexema
             ExpectToken('IDENTIFIER')
             nodo3 = Node("StmtP", parent=nodoP)
             StmtP(nodo3)
 
 def StmtP(nodoP):
+    global nombreVar
+    global tokActualAssign
     if curToken not in pStmtP:
         Error(pStmtP,curToken)
     else:
         if(curToken == 'EQUAL'):
+            #ASIGNACIONES
             nodo = Node("=", parent=nodoP)
             ExpectToken('EQUAL')
             nodo2 = Node("Expr", parent=nodoP)
+            tokActualAssign = True
             Expr(nodo2)
+            print(nombreVar)
+            for pre, fill, node in RenderTree(nodo2):
+                if(tokActualAssign==True):
+                    for i in range(len(tablaSimbolos)):
+                        if(tablaSimbolos[i].declared == TRUE):
+                            if(tablaSimbolos[i].name == nombreVar and (tablaSimbolos[i].tokenType == "parametro" or tablaSimbolos[i].tokenType == "variable") ):
+                                if(node.name=="array"):
+                                    tablaSimbolos[i].ret = "ARRAY"
+                                    print("ARRAY")
+                                    print(tablaSimbolos[i].name)
+                                    tokActualAssign=False
+                                    break
+                                elif(node.name=="Id"):
+                                    #verificar si es funcion o variable
+                                    tablaSimbolos[i].ret = "ID"
+                                    print("FUNCTION")
+                                    break
+                                elif(node.name=="integer"):
+                                    tablaSimbolos[i].ret = "INT"
+                                    print("INTEGER")
+                                    break
+                                elif(node.name=="character"):
+                                    tablaSimbolos[i].ret = "CHAR"
+                                    print("CHARACTER")
+                                    break
+                                elif(node.name=="bool"):
+                                    tablaSimbolos[i].ret = "BOOL"
+                                    print("BOOLEAN")
+                                    break
+                                elif(node.name=="string"):
+                                    tablaSimbolos[i].ret = "STRING"
+                                    print("STRING")
+                                    break
+                                                      
+                print("%s%s" % (pre, node.name))
+
             nodo3 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
         elif(curToken == 'LPAR'):
+            #LLAMAR FUNCIONES SIN GUARDAR VALOR
             nodo4 = Node("(", parent=nodoP)
             ExpectToken('LPAR')
             nodo5 = Node("Exprlist", parent=nodoP)
@@ -1073,8 +1115,8 @@ Program(nodoPadre)
 print("\n")
 print("Árbol sintáctico")
 print("\n")
-for pre, fill, node in RenderTree(nodoPadre):
-    print("%s%s" % (pre, node.name))
+# for pre, fill, node in RenderTree(nodoPadre):
+#     print("%s%s" % (pre, node.name))
 
 print("Tabla de símbolos")
 for i in range(len(tablaSimbolos)): 
