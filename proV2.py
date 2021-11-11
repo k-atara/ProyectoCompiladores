@@ -262,13 +262,13 @@ lTokensDeseados=[]
 class TSimbolo:
     def __init__(self, declared, tokenType, name, dataType, size, params, ret, scope ):
         self.declared = declared #verificar si ya existia ese id o no (TRUE FALSE)
-        self.tokenType = tokenType #tipo de token (id, funcion)
-        self.name = name #nombre de token
+        self.tokenType = tokenType #tipo de token (variable o funcion)
+        self.name = name #nombre o identificador del token
         self.dataType = dataType #si es un id, verificar su literal 
-        self.size = size #...
-        self.params = params #para ids es nulo, para funciones verificar su numero de parametros
-        self.ret = ret #lo que devuelve el return (si no hay return, es un void)
-        self.scope = scope #nivel 
+        self.size = size #algunos necesitan el tamaño
+        self.params = params #si es una funcion necesitamos cantidad de parametros y el tipo de cada uno, para ids es nulo, para funciones verificar su numero de parametros
+        self.ret = ret #si es una funcion(el tipo de retorno), lo que devuelve el return (si no hay return, es un void)
+        self.scope = scope #nivel de contexto 
 
 listaTSimbolos = []
 numScope=1
@@ -287,7 +287,7 @@ def GetCurrentToken():
     global lEntrada
     if(contador<lEntrada):
         curToken=vEntrada[contador].category
-        print(str(curToken))
+        #print(str(curToken))
         #print(vEntrada[contador].categoria)
         return curToken
     else:
@@ -306,6 +306,8 @@ def GetCurrentToken():
 
 #     token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
 
+#Error: línea, columna se esperaba x caracter
+
 def ErrorS(categoria, token):
     global listaCategoriaSimbolo
     global listaCategoria
@@ -323,6 +325,12 @@ def ErrorS(categoria, token):
     col = vEntrada[contador].column
 
     print("Se esperaba: " + categoriaDeseada + "\nPero se encontro: "+ tokenObt + "\nen fila: " + str(row) + "\nen columna: " + str(col))
+    
+    print("Tabla de símbolos")
+    del tablaSimbolos[len(tablaSimbolos)-1]
+    for i in range(len(tablaSimbolos)): 
+        print(tablaSimbolos[i].name)
+    
     sys.exit()
 
 def Error(categoryList, token):
@@ -349,18 +357,110 @@ def Error(categoryList, token):
     col = vEntrada[contador].column
     print("Se esperaba: " + lCats + "\nPero se encontro: "+tokenObt+ "\nen fila: " + str(row) + "\nen columna: " + str(col) )
     
+    print("Tabla de símbolos")
+    del tablaSimbolos[len(tablaSimbolos)-1]
+    for i in range(len(tablaSimbolos)): 
+        print(tablaSimbolos[i].name)
+        
     sys.exit()
 
 def ExpectToken(category):
     global curToken
     global vEntrada
-    if(curToken == category):
+    if(curToken == category):    
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
     else:
         ErrorS(category,curToken)
+
+
+#----------------------------------------------------------------------------------------        
+#1.-Var equivalente a Parámetro, si ya esta en la tabla (id) muere, si no existe lo agrega 
+#1.- Conseguir lo que devuelven las funciones, esto sinifica que hay un return, sino no tiene un return es un void
+#2.- Si tiene un return tenemos que ver si es un lit o 
+#Tipo de dato
+tDatoToken = ""
+
+#vEntrada
+tablaSimbolos = []
+boolParam = False
+boolVar = False
+boolFun = False
+boolReturn = False
+contadorParam = 0
+tokenActualReturn = Token
+nombreFunReturn = ""
+tokenReturnCategory = ""
+
+def VerificarExistencia(token):
+    global tablaSimbolos
+    """
+    if(tablaSimbolos.name == token.lexema and tablaSimbolos.name == token.lexema):
+        return True
+    else: 
+        return False  
+    """ 
     
+def lastFunction():
+    global contadorParam
+    global tablaSimbolos
+    newList = list(reversed(tablaSimbolos))
+    
+    for i in range(len(newList)): 
+        if(newList[i].tokenType == "función"):
+            tablaSimbolos[len(tablaSimbolos)-1-i].params = contadorParam
+            break
+    
+#Scope
+    
+def crearVar(token):
+    declared = VerificarExistencia(token)
+    if(boolVar==True):
+        objeto = TSimbolo(False, "variable", token.lexema, "*", "*", "-", "-", numScope)
+    elif(boolParam==True):
+        objeto = TSimbolo(False, "parametro", token.lexema, "*", "*", "-", "-", numScope)
+    tablaSimbolos.append(objeto)
+    
+def crearFun(token):
+    global contadorParam
+    declared = VerificarExistencia(token)
+    objeto = TSimbolo(False, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
+    tablaSimbolos.append(objeto)
+    
+def returnReturn():
+    global tokenActualReturn
+    global boolReturn
+    global nombreFunReturn
+    global tokenReturnCategory
+    global tablaSimbolos
+    
+    print(nombreFunReturn)
+    
+    for i in range(len(tablaSimbolos)):
+        if(tablaSimbolos[i].name == nombreFunReturn and tablaSimbolos[i].tokenType == "función"):
+            if(boolReturn == True):
+                if(tokenReturnCategory == "LSQB"):
+                    tablaSimbolos[i].ret = "ARRAY"
+                    tokenReturnCategory = ""
+                elif(tokenReturnCategory == "LPAR"):
+                    tablaSimbolos[i].ret = "OPER"
+                    tokenReturnCategory = ""
+                elif(tokenActualReturn.category == "IDENTIFIER"):
+                    tablaSimbolos[i].ret = "ID"
+                elif(tokenActualReturn.category == "INTEGER"):
+                    tablaSimbolos[i].ret = "INT"
+                elif(tokenActualReturn.category == "CHARACTER"):
+                    tablaSimbolos[i].ret = "CHAR"
+                elif(tokenActualReturn.category == "STRING"):
+                    tablaSimbolos[i].ret = "STRING"
+                elif(tokenActualReturn.category == "TRUE" or tokenActualReturn.category == "FALSE"):
+                    tablaSimbolos[i].ret = "BOOL"
+            else:
+                tablaSimbolos[i].ret = "VOID"
+    
+#---------------------------------------------------------------------------------------- 
+
 def Program(nodoPadre):
     while(curToken in pDeflist):
         Deflist(nodoPadre)
@@ -387,12 +487,15 @@ def Def(nodoP):
         Vardef(nodo)
 
 def Vardef(nodoP):
+    global boolVar
+    boolVar = True
     nodoPa = Node("Vardef", parent=nodoP)
     nodo = Node("VAR", parent=nodoPa)
     ExpectToken('VAR')
     nodo2 = Node("Varlist", parent=nodoP)
     Varlist(nodo2)
     nodo3 = Node(";", parent=nodoP)
+    boolVar = False
     ExpectToken('SEMI')
 
 def Varlist(nodoP):
@@ -400,16 +503,22 @@ def Varlist(nodoP):
     Idlist(nodo)
 
 def Idlist(nodoP):
+    global contadorParam
     nodo = Node("Id", parent=nodoP)
+    crearVar(vEntrada[contador])
+    contadorParam+=1
     ExpectToken('IDENTIFIER')
     nodo2 = Node("Idlistcont", parent=nodoP)
     Idlistcont(nodo2)
 
 def Idlistcont(nodoP):
+    global contadorParam
     while(curToken in pIdlistcont):
         nodo = Node(",", parent=nodoP)
         ExpectToken('COMMA')
         nodo2= Node("Id", parent=nodoP)
+        crearVar(vEntrada[contador])
+        contadorParam+=1
         ExpectToken('IDENTIFIER')
         nodo3= Node("Idlistcont", parent=nodoP)
         Idlistcont(nodo3)
@@ -418,30 +527,43 @@ def Idlistcont(nodoP):
 
 def Fundef(nodoP):
     global numScope
+    global boolParam
+    global nombreFunReturn
+    global boolReturn
     nodoPa = Node("Fundef", parent=nodoP)
     nodo = Node("Id", parent=nodoPa)
+    crearFun(vEntrada[contador])
+    nombreFunReturn = vEntrada[contador].lexema
     ExpectToken('IDENTIFIER')
     nodo2 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
+    boolParam = True
     nodo3 = Node("Paramlist", parent=nodoPa)
     Paramlist(nodo3)
+    boolParam = False
     nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
     nodo5 = Node("{", parent=nodoPa)
     ExpectToken('LBRACE')
-    numScope+=1
     nodo6 = Node("Vardeflist", parent=nodoPa)
     Vardeflist(nodo6)
     nodo7 = Node("Stmtlist", parent=nodoPa)
     Stmtlist(nodo7)
     nodo8 = Node("}", parent=nodoPa)
+    returnReturn()
     ExpectToken('RBRACE')
+    boolReturn = False
     numScope+=1
 
 def Paramlist(nodoP):
+    global numScope
+    global contadorParam
+    numScope+=1
+    contadorParam=0
     while(curToken in pParamlist):
         nodo = Node("Paramlist", parent=nodoP)
         Idlist(nodo)
+    lastFunction()
     if curToken not in pParamlist:
         nodoE= Node("ε", parent=nodoP)
 
@@ -673,6 +795,8 @@ def Stmtbreak(nodoP):
     ExpectToken('SEMI')
 
 def Stmtreturn(nodoP):
+    global boolReturn
+    boolReturn = True
     nodoPa = Node("Stmtreturn", parent=nodoP)
     nodo = Node("return", parent=nodoPa)
     ExpectToken('RETURN')
@@ -873,21 +997,30 @@ def Opunary(nodoP):
             ExpectToken('NOT')
     
 def Exprprimary(nodoP):
+    global vEntrada
+    global contador
+    global tokenActualReturn
+    global tokenReturnCategory
+    
     if curToken not in pExprprimary:
         Error(pExprprimary,curToken)
     else:
         if(curToken == 'IDENTIFIER'):
+            tokenActualReturn = vEntrada[contador]
             nodo = Node("Id", parent=nodoP)
             ExpectToken('IDENTIFIER')
             nodo2 = Node("ExprprimaryP", parent=nodoP)
             ExprprimaryP(nodo2)
         elif(curToken in pArray):
+            tokenReturnCategory = "LSQB"
             nodo3 = Node("array", parent=nodoP)
             Array(nodo3)
         elif(curToken in pLit):
+            tokenActualReturn = vEntrada[contador]
             nodo4 = Node("lit", parent=nodoP)
             Lit(nodo4)
         else:
+            tokenReturnCategory = "LPAR"
             nodo5 = Node("(", parent=nodoP)
             ExpectToken('LPAR')
             nodo6 = Node("Expr", parent=nodoP)
@@ -942,3 +1075,16 @@ print("Árbol sintáctico")
 print("\n")
 for pre, fill, node in RenderTree(nodoPadre):
     print("%s%s" % (pre, node.name))
+
+print("Tabla de símbolos")
+for i in range(len(tablaSimbolos)): 
+    print(
+        str(tablaSimbolos[i].declared) + "|" + 
+        tablaSimbolos[i].tokenType + "|" + 
+        tablaSimbolos[i].name  + "|" +
+        tablaSimbolos[i].dataType  + "|" +
+        tablaSimbolos[i].size + "|" +
+        str(tablaSimbolos[i].params) + "|" +
+        tablaSimbolos[i].ret + "|" +
+        str(tablaSimbolos[i].scope)
+        )
