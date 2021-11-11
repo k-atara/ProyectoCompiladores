@@ -944,3 +944,36 @@ print("Árbol sintáctico")
 print("\n")
 for pre, fill, node in RenderTree(nodoPadre):
     print("%s%s" % (pre, node.name))
+
+#----------------------------------------------------------------------------------------        
+
+#vEntrada
+
+def VerificarExistencia():
+    print("Verificar si ya existe en la TS")
+    
+def TipoToken():
+    print("Verificar tipo de token (variable o función)")
+    
+#El nombre es el lexema
+ 
+def TipoDato():
+    print("Determinar el tipo de dato")
+    
+def Tamaño():
+    print("Si es una variable necesita el tamaño")
+    
+def Parametros():
+    print("Si es una funcion necesitamos cantidad de parametros y el tipo de cada uno")
+    
+def Retorno():
+    print("Si es una funcion(el tipo de retorno)")
+    
+#Scope
+
+def Linea():
+    print("La línea")
+    
+    
+def TS():
+    print("Crear cada objeto TSimbolo")
