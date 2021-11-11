@@ -32,3 +32,16 @@ bye2(){
     var mundo;
     return [1,2,3];
 }
+
+string(){
+    return "Hola mundo";
+}
+
+void(){
+    
+}
+
+funP(){
+    return [2,3,5];
+}
+

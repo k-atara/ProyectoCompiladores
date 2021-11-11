@@ -436,23 +436,28 @@ def returnReturn():
     global tablaSimbolos
     
     print(nombreFunReturn)
-    if(boolReturn == True):
-        if(tokenReturnCategory == "LSQB"):
-            print("ARRAY")
-        elif(tokenReturnCategory == "LPAR"):
-            print("OPER")
-        elif(tokenActualReturn.category == "IDENTIFIER"):
-            print("ID")
-        elif(tokenActualReturn.category == "INTEGER"):
-            print("INT")
-        elif(tokenActualReturn.category == "CHARACTER"):
-            print("CHAR")
-        elif(tokenActualReturn.category == "STRING"):
-            print("STRING")
-        elif(tokenActualReturn.category == "TRUE" or tokenActualReturn.category == "FALSE"):
-            print("BOOL")
-    else:
-        print("Void")
+    
+    for i in range(len(tablaSimbolos)):
+        if(tablaSimbolos[i].name == nombreFunReturn and tablaSimbolos[i].tokenType == "función"):
+            if(boolReturn == True):
+                if(tokenReturnCategory == "LSQB"):
+                    tablaSimbolos[i].ret = "ARRAY"
+                    tokenReturnCategory = ""
+                elif(tokenReturnCategory == "LPAR"):
+                    tablaSimbolos[i].ret = "OPER"
+                    tokenReturnCategory = ""
+                elif(tokenActualReturn.category == "IDENTIFIER"):
+                    tablaSimbolos[i].ret = "ID"
+                elif(tokenActualReturn.category == "INTEGER"):
+                    tablaSimbolos[i].ret = "INT"
+                elif(tokenActualReturn.category == "CHARACTER"):
+                    tablaSimbolos[i].ret = "CHAR"
+                elif(tokenActualReturn.category == "STRING"):
+                    tablaSimbolos[i].ret = "STRING"
+                elif(tokenActualReturn.category == "TRUE" or tokenActualReturn.category == "FALSE"):
+                    tablaSimbolos[i].ret = "BOOL"
+            else:
+                tablaSimbolos[i].ret = "VOID"
     
 #---------------------------------------------------------------------------------------- 
 
