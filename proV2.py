@@ -85,6 +85,7 @@ for j in range(len(listaTokens)):
 print("----------------------------------------------------")
 print("Numero de tokens: " +str(len(listaTokens)))
 print("Numero de filas: "+str(row))
+print("Fin de análisis léxico")
 print("----------------------------------------------------")
 
 #---------------------------------------------------------------------------------------------PARSER
@@ -287,11 +288,11 @@ def GetCurrentToken():
     global lEntrada
     if(contador<lEntrada):
         curToken=vEntrada[contador].category
-        #print(str(curToken))
+        print(str(curToken))
         #print(vEntrada[contador].categoria)
         return curToken
     else:
-        print("Fin de analisis")
+        print("Fin de analisis sintáctico\n")
         #sys.exit()
 
 # def InsertSymbolTable():
@@ -326,10 +327,23 @@ def ErrorS(categoria, token):
 
     print("Se esperaba: " + categoriaDeseada + "\nPero se encontro: "+ tokenObt + "\nen fila: " + str(row) + "\nen columna: " + str(col))
     
-    print("Tabla de símbolos")
+    print("Arbol\n")
+    for pre, fill, node in RenderTree(nodoPadre):
+        print("%s%s" % (pre, node.name))
+
+    print("Tabla de símbolos\n")
     del tablaSimbolos[len(tablaSimbolos)-1]
     for i in range(len(tablaSimbolos)): 
-        print(tablaSimbolos[i].name)
+        print(
+            str(tablaSimbolos[i].declared) + "|" + 
+            tablaSimbolos[i].tokenType + "|" + 
+            tablaSimbolos[i].name  + "|" +
+            tablaSimbolos[i].dataType  + "|" +
+            tablaSimbolos[i].size + "|" +
+            str(tablaSimbolos[i].params) + "|" +
+            tablaSimbolos[i].ret + "|" +
+            str(tablaSimbolos[i].scope)
+            )
     
     sys.exit()
 
@@ -357,10 +371,23 @@ def Error(categoryList, token):
     col = vEntrada[contador].column
     print("Se esperaba: " + lCats + "\nPero se encontro: "+tokenObt+ "\nen fila: " + str(row) + "\nen columna: " + str(col) )
     
+    print("Arbol")
+    for pre, fill, node in RenderTree(nodoPadre):
+        print("%s%s" % (pre, node.name))
+
     print("Tabla de símbolos")
     del tablaSimbolos[len(tablaSimbolos)-1]
     for i in range(len(tablaSimbolos)): 
-        print(tablaSimbolos[i].name)
+        print(
+            str(tablaSimbolos[i].declared) + "|" + 
+            tablaSimbolos[i].tokenType + "|" + 
+            tablaSimbolos[i].name  + "|" +
+            tablaSimbolos[i].dataType  + "|" +
+            tablaSimbolos[i].size + "|" +
+            str(tablaSimbolos[i].params) + "|" +
+            tablaSimbolos[i].ret + "|" +
+            str(tablaSimbolos[i].scope)
+            )
         
     sys.exit()
 
@@ -431,9 +458,7 @@ def returnReturn():
     global nombreFunReturn
     global tokenReturnCategory
     global tablaSimbolos
-    
-    print(nombreFunReturn)
-    
+    #print(nombreFunReturn)
     for i in range(len(tablaSimbolos)):
         if(tablaSimbolos[i].name == nombreFunReturn and tablaSimbolos[i].tokenType == "función"):
             if(boolReturn == True):
@@ -529,7 +554,6 @@ def Fundef(nodoP):
     global boolReturn
     nodoPa = Node("Fundef", parent=nodoP)
     nodo = Node("Id", parent=nodoPa)
-    print(RenderTree(nodo.parent.parent.parent.parent.parent))
     crearFun(vEntrada[contador])
     nombreFunReturn = vEntrada[contador].lexema
     ExpectToken('IDENTIFIER')
@@ -632,7 +656,7 @@ def StmtP(nodoP):
             nodo2 = Node("Expr", parent=nodoP)
             tokActualAssign = True
             Expr(nodo2)
-            print(nombreVar)
+            #print(nombreVar)
             for pre, fill, node in RenderTree(nodo2):
                 if(tokActualAssign==True):
                     for i in range(len(tablaSimbolos)):
@@ -640,33 +664,33 @@ def StmtP(nodoP):
                             if(tablaSimbolos[i].name == nombreVar and (tablaSimbolos[i].tokenType == "parametro" or tablaSimbolos[i].tokenType == "variable") ):
                                 if(node.name=="array"):
                                     tablaSimbolos[i].ret = "ARRAY"
-                                    print("ARRAY")
-                                    print(tablaSimbolos[i].name)
+                                    #print("ARRAY")
+                                    #print(tablaSimbolos[i].name)
                                     tokActualAssign=False
                                     break
                                 elif(node.name=="Id"):
                                     #verificar si es funcion o variable
                                     tablaSimbolos[i].ret = "ID"
-                                    print("FUNCTION")
+                                    #print("FUNCTION")
                                     break
                                 elif(node.name=="integer"):
                                     tablaSimbolos[i].ret = "INT"
-                                    print("INTEGER")
+                                    #print("INTEGER")
                                     break
                                 elif(node.name=="character"):
                                     tablaSimbolos[i].ret = "CHAR"
-                                    print("CHARACTER")
+                                    #print("CHARACTER")
                                     break
                                 elif(node.name=="bool"):
                                     tablaSimbolos[i].ret = "BOOL"
-                                    print("BOOLEAN")
+                                    #print("BOOLEAN")
                                     break
                                 elif(node.name=="string"):
                                     tablaSimbolos[i].ret = "STRING"
-                                    print("STRING")
+                                    #print("STRING")
                                     break
                                                       
-                print("%s%s" % (pre, node.name))
+                #print("%s%s" % (pre, node.name))
 
             nodo3 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
@@ -1115,8 +1139,8 @@ Program(nodoPadre)
 print("\n")
 print("Árbol sintáctico")
 print("\n")
-# for pre, fill, node in RenderTree(nodoPadre):
-#     print("%s%s" % (pre, node.name))
+for pre, fill, node in RenderTree(nodoPadre):
+    print("%s%s" % (pre, node.name))
 
 print("Tabla de símbolos")
 for i in range(len(tablaSimbolos)): 

@@ -3,7 +3,7 @@
    (C) 2021 Ariel Ortiz, ITESM CEM.
 *)
 
-main() {
+main()) {
     var a,b,c,d, e,f,g;
     a=1;
     b='H';
