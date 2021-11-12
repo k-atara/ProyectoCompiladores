@@ -26,3 +26,35 @@ y 4
 a 5
 m 6
 o 7
+
+funcion returns
+    si hay return
+        si:
+            si es ID
+                buscar id en tabla de simbolos
+                return tipoDato de id
+            si es int
+                return int
+            si es char
+                return char
+            si es true | si es false
+                return bool
+            si es string
+                return string
+        no:
+    return void
+
+
+funcion tipoDato
+    buscar id en tabla de simbolos
+    si no esta en tabla de simbolos:
+        morir programa
+    si SI esta:
+        si es funcion:
+            buscar valor del return de la funcion
+            devolver return de la funcion
+        si es var:
+            buscar tipo de dato del var
+            devolver tipo de dato del var
+        si es otra cosa (literales):
+            devolver literal
