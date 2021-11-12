@@ -4,44 +4,7 @@
 *)
 
 
-main(b, d, e, c) {
-    var start, ff, temp;
-    prints("hello, world\n");
-    return 42;
+main() {
+    var x;
+    x= (2+2);
 }
-
-pepe(){
-    var pepe;
-    return pepe;
-}
-
-juan(parm1, param2){
-    if (sum == 88) {
-        prints("The program works fine!\n");
-    } else {
-        prints("This program sucks!\n");
-    }
-    return 'a';
-}
-
-kim(){
-    return (1 + 2);
-}
-
-bye2(){
-    var mundo;
-    return [1,2,3];
-}
-
-string(){
-    return "Hola mundo";
-}
-
-void(){
-    
-}
-
-funP(){
-    return [2,3,5];
-}
-

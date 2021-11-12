@@ -76,7 +76,7 @@ for m in respuestaRegex:
     # print(str(nToken)+'\n')
     # print(m.groups(),m.start(),m.end())
     # print("-----------------")
-    # print('\n')
+    # print('\n')  
     IterarGrupos(m)
 
 for j in range(len(listaTokens)):
