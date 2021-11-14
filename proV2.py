@@ -313,6 +313,7 @@ def ErrorS(categoria, token):
     global listaCategoriaSimbolo
     global listaCategoria
     global vEntrada
+    global lEntrada
     global contador
 
     print("ERROR SINTACTICO\n")
@@ -322,8 +323,12 @@ def ErrorS(categoria, token):
     pos2= listaCategoria.index(token)
     tokenObt = listaCategoriaSimbolo[pos2]
 
-    row = vEntrada[contador].row
-    col = vEntrada[contador].column
+    if(contador == lEntrada):
+        row = vEntrada[contador].row
+        col = vEntrada[contador].column
+    else:
+        row = ""
+        col = ""
 
     print("Se esperaba: " + categoriaDeseada + "\nPero se encontro: "+ tokenObt + "\nen fila: " + str(row) + "\nen columna: " + str(col))
     
@@ -394,6 +399,7 @@ def Error(categoryList, token):
 def ExpectToken(category):
     global curToken
     global vEntrada
+    print("Expect:", category)
     if(curToken == category):    
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
