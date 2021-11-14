@@ -51,6 +51,20 @@ def IterarGrupos(m):
                     token = Token(grupo[i],listaCategoria[i],row,columnToken)
                 listaTokens.append(token)
                 break
+            
+            # if int
+            #     c-1=minus
+            #         if 1-2,147,483,648 
+            #             chingon
+            #         else
+            #             F muere el programa
+            #     else    
+            #         if 0-2,147,483,647
+            #             chingon
+            #         else
+            #             F print(integer fuera de rango)
+
+
 
 nom_archivo = sys.argv[1]
 
@@ -567,7 +581,6 @@ def Fundef(nodoP):
     Stmtlist(nodo7)
     nodo8 = Node("}", parent=nodoPa)
     returnReturn()
-#    print((nodo3.children[0].children[1].children))
     ExpectToken('RBRACE')
     boolReturn = False
     numScope+=1

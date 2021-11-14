@@ -2,3 +2,15 @@ main(){
     var a;
     a=-1; 
 }
+
+(*
+0 - 2,147,483,648
+
+variable que mantenga el valor de OPUNARY (+,-,NOT)
+
+litint:
+    si el numero tiene - | NOT:
+        1-2,147,483,648
+    si no
+        0-2,147,483,647
+*)
