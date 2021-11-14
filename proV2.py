@@ -10,8 +10,8 @@ import copy
 #-------------------------------------------------------------------------------TOKENIZADOR
 
 listaTokens=[]
-listaCategoria=['MULTICOM','DX','COMMENT','LPAR','RPAR','LSQB','RSQB','LBRACE','RBRACE','SEMI','COMMA','MINUS','PLUS','STAR','SLASH','PERCENT','EQEQUAL','NOTEQUAL','GREATEREQUAL','LESSEQUAL','LESS','EQUAL','GREATER','MAIN','PRINTS','AND','BREAK','DEC','DO','ELIF','ELSE','FALSE','IF','INC','NOT','OR','RETURN','TRUE','VAR','WHILE','IDENTIFIER','INTEGER','STRING','CHARACTER','CHARACTER','CHARACTER','ENTER','TAB','READLINE','SPACE','RDOUBLESLASH','CSIMPLE','CDOUBLE','ILEGAL']
-listaCategoriaSimbolo=['','','','(',')','[',']','{','}',';',',','-','+','*','/','%','==','<>','>=','<=','<','=','>',"un Identifier","un Identifier",'and','break','dec','do','elif','else','false','if','inc','not','or','return','true','var','while',"un identifier","un entero","un string","un caracter","un caracter","un caracter",'enter','tab','readline','espacio','\\','\'','\"','Ilegal']
+listaCategoria=['MULTICOM','DX','COMMENT','LPAR','RPAR','LSQB','RSQB','LBRACE','RBRACE','SEMI','COMMA','MINUS','PLUS','STAR','SLASH','PERCENT','EQEQUAL','NOTEQUAL','GREATEREQUAL','LESSEQUAL','LESS','EQUAL','GREATER','MAIN','PRINTS','AND','BREAK','DEC','DO','ELIF','ELSE','FALSE','IF','INC','NOT','OR','RETURN','TRUE','VAR','WHILE','IDENTIFIER','INTEGER','STRING','CHARACTER','CHARACTER','CHARACTER','ENTER','TAB','READLINE','SPACE','RDOUBLESLASH','CSIMPLE','CDOUBLE','ILEGAL', 'EMPTY']
+listaCategoriaSimbolo=['','','','(',')','[',']','{','}',';',',','-','+','*','/','%','==','<>','>=','<=','<','=','>',"un Identifier","un Identifier",'and','break','dec','do','elif','else','false','if','inc','not','or','return','true','var','while',"un identifier","un entero","un string","un caracter","un caracter","un caracter",'enter','tab','readline','espacio','\\','\'','\"','Ilegal', 'ε']
 row = 1
 column=0
 
@@ -25,7 +25,6 @@ class Token:
 def IterarGrupos(m):
     global row
     global column
-
     grupo=m.groups()
     for i in range(len(grupo)):
         if(grupo[i]!=None):
@@ -271,10 +270,11 @@ class TSimbolo:
         self.ret = ret #si es una funcion(el tipo de retorno), lo que devuelve el return (si no hay return, es un void)
         self.scope = scope #nivel de contexto 
 
+#tipo de dato en la primera asignacion
+#validar los digitos del INT
 listaTSimbolos = []
 numScope=1
 
-#token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
 
 #nodo principal arbol
 nodoPadre = Node("PROGRAM")
@@ -288,26 +288,10 @@ def GetCurrentToken():
     global lEntrada
     if(contador<lEntrada):
         curToken=vEntrada[contador].category
-        print(str(curToken))
-        #print(vEntrada[contador].categoria)
+        #print(str(curToken))
         return curToken
     else:
         print("Fin de analisis sintáctico\n")
-        #sys.exit()
-
-# def InsertSymbolTable():
-#     global curToken
-#     global contador
-#     global vEntrada
-#     global listaTSimbolos
-#     tamListaTS = len(listaTSimbolos)
-#     for i in tamListaTS:
-#         if(listaTSimbolos[i].name !=) 
-#     if()
-
-#     token = TSimbolo(True, "Id", "f", "INT", None, None, None, 1)
-
-#Error: línea, columna se esperaba x caracter
 
 def ErrorS(categoria, token):
     global listaCategoriaSimbolo
@@ -316,11 +300,16 @@ def ErrorS(categoria, token):
     global contador
 
     print("ERROR SINTACTICO\n")
+
     pos= listaCategoria.index(categoria)
     categoriaDeseada = listaCategoriaSimbolo[pos]
 
     pos2= listaCategoria.index(token)
     tokenObt = listaCategoriaSimbolo[pos2]
+
+    if(contador==lEntrada):
+        contador-=1
+        tokenObt="ε"
 
     row = vEntrada[contador].row
     col = vEntrada[contador].column
@@ -332,7 +321,8 @@ def ErrorS(categoria, token):
         print("%s%s" % (pre, node.name))
 
     print("Tabla de símbolos\n")
-    del tablaSimbolos[len(tablaSimbolos)-1]
+
+    #del tablaSimbolos[len(tablaSimbolos)-1]
     for i in range(len(tablaSimbolos)): 
         print(
             str(tablaSimbolos[i].declared) + "|" + 
@@ -376,7 +366,7 @@ def Error(categoryList, token):
         print("%s%s" % (pre, node.name))
 
     print("Tabla de símbolos")
-    del tablaSimbolos[len(tablaSimbolos)-1]
+    #del tablaSimbolos[len(tablaSimbolos)-1]
     for i in range(len(tablaSimbolos)): 
         print(
             str(tablaSimbolos[i].declared) + "|" + 
@@ -394,7 +384,11 @@ def Error(categoryList, token):
 def ExpectToken(category):
     global curToken
     global vEntrada
-    if(curToken == category):    
+    #print("curtoken"+ curToken)
+    #print("contador"+str(contador))
+    #print("ventrada "+vEntrada[contador-1].lexema)
+    if(curToken == category):   
+        print(category) 
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
@@ -479,7 +473,7 @@ def returnReturn():
                 elif(tokenActualReturn.category == "TRUE" or tokenActualReturn.category == "FALSE"):
                     tablaSimbolos[i].ret = "BOOL"
             else:
-                tablaSimbolos[i].ret = "VOID"
+                tablaSimbolos[i].ret = "0"
     
 #---------------------------------------------------------------------------------------- 
 
@@ -527,9 +521,9 @@ def Varlist(nodoP):
 def Idlist(nodoP):
     global contadorParam
     nodo = Node("Id", parent=nodoP)
-    crearVar(vEntrada[contador])
-    contadorParam+=1
     ExpectToken('IDENTIFIER')
+    crearVar(vEntrada[contador-1])
+    contadorParam+=1
     nodo2 = Node("Idlistcont", parent=nodoP)
     Idlistcont(nodo2)
 
@@ -539,9 +533,9 @@ def Idlistcont(nodoP):
         nodo = Node(",", parent=nodoP)
         ExpectToken('COMMA')
         nodo2= Node("Id", parent=nodoP)
-        crearVar(vEntrada[contador])
-        contadorParam+=1
         ExpectToken('IDENTIFIER')
+        crearVar(vEntrada[contador-1])
+        contadorParam+=1
         nodo3= Node("Idlistcont", parent=nodoP)
         Idlistcont(nodo3)
     if curToken not in pIdlistcont:
@@ -554,9 +548,9 @@ def Fundef(nodoP):
     global boolReturn
     nodoPa = Node("Fundef", parent=nodoP)
     nodo = Node("Id", parent=nodoPa)
-    crearFun(vEntrada[contador])
-    nombreFunReturn = vEntrada[contador].lexema
     ExpectToken('IDENTIFIER')
+    crearFun(vEntrada[contador-1])
+    nombreFunReturn = vEntrada[contador-1].lexema
     nodo2 = Node("(", parent=nodoPa)
     ExpectToken('LPAR')
     boolParam = True
@@ -607,7 +601,14 @@ def Stmtlist(nodoP):
     StmtlistP(nodo)
 
 def StmtlistP(nodoP):
-    while(curToken in pStmtlistP):
+    global contador
+    global lEntrada
+    global vEntrada
+    global curToken
+
+    if (curToken in pStmtlistP and contador == lEntrada):
+        curToken="EMPTY"
+    while(curToken in pStmtlistP ):
         nodo = Node("StmtlistP", parent=nodoP)
         Stmt(nodo)
         StmtlistP(nodo)
@@ -656,7 +657,6 @@ def StmtP(nodoP):
             nodo2 = Node("Expr", parent=nodoP)
             tokActualAssign = True
             Expr(nodo2)
-            #print(nombreVar)
             for pre, fill, node in RenderTree(nodo2):
                 if(tokActualAssign==True):
                     for i in range(len(tablaSimbolos)):
