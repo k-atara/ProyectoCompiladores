@@ -43,6 +43,24 @@ def IterarGrupos(m):
             elif(listaCategoria[i]=='ILEGAL'):
                 print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1))
                 sys.exit()
+            elif(listaCategoria[i]=='INTEGER'):
+                columnToken=m.start()-column+1
+                if(listaTokens[len(listaTokens)-1].lexema=='-'):
+                    #print("Negativo",grupo[i])
+                    if(int(grupo[i])>=1 and int(grupo[i])<=2147483648):
+                        token = Token(grupo[i],listaCategoria[i],row,columnToken)
+                    else:
+                        print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1))
+                        sys.exit()
+                else:
+                    #print("Positivo",grupo[i])
+                    if(int(grupo[i])>=0 and int(grupo[i])<=2147483648):
+                        token = Token(grupo[i],listaCategoria[i],row,columnToken)
+                    else:
+                        print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1))
+                        sys.exit()
+                listaTokens.append(token)
+                break
             else:
                 columnToken=m.start()-column+1
                 if(listaCategoria[i]=='MAIN' or listaCategoria[i]=='PRINTS'):
