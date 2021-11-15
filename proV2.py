@@ -50,14 +50,14 @@ def IterarGrupos(m):
                     if(int(grupo[i])>=1 and int(grupo[i])<=2147483648):
                         token = Token(grupo[i],listaCategoria[i],row,columnToken)
                     else:
-                        print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1))
+                        print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1)+ "TAMAÑO DEL NÚMERO EXCEDE LOS 32 BITS")
                         sys.exit()
                 else:
                     #print("Positivo",grupo[i])
                     if(int(grupo[i])>=0 and int(grupo[i])<=2147483648):
                         token = Token(grupo[i],listaCategoria[i],row,columnToken)
                     else:
-                        print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1))
+                        print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1) + "TAMAÑO DEL NÚMERO EXCEDE LOS 32 BITS")
                         sys.exit()
                 listaTokens.append(token)
                 break
@@ -468,15 +468,15 @@ def lastFunction():
 def crearVar(token):
     declared = VerificarExistencia(token)
     if(boolVar==True):
-        objeto = TSimbolo(True, "variable", token.lexema, "*", "*", "-", "-", numScope)
+        objeto = TSimbolo(False, "variable", token.lexema, "*", "*", "-", "-", numScope)
     elif(boolParam==True):
-        objeto = TSimbolo(True, "parametro", token.lexema, "*", "*", "-", "-", numScope)
+        objeto = TSimbolo(False, "parametro", token.lexema, "*", "*", "-", "-", numScope)
     tablaSimbolos.append(objeto)
     
 def crearFun(token):
     global contadorParam
     declared = VerificarExistencia(token)
-    objeto = TSimbolo(True, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
+    objeto = TSimbolo(False, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
     tablaSimbolos.append(objeto)
     
 def returnReturn():
@@ -692,36 +692,41 @@ def StmtP(nodoP):
             for pre, fill, node in RenderTree(nodo2):
                 if(tokActualAssign==True):
                     for i in range(len(tablaSimbolos)):
-                        if(tablaSimbolos[i].declared == TRUE):
+                        if(tablaSimbolos[i].declared == False):
                             if(tablaSimbolos[i].name == nombreVar and (tablaSimbolos[i].tokenType == "parametro" or tablaSimbolos[i].tokenType == "variable") ):
                                 if(node.name=="array"):
                                     tablaSimbolos[i].ret = "ARRAY"
                                     #print("ARRAY")
                                     #print(tablaSimbolos[i].name)
+                                    tablaSimbolos[i].declared=True
                                     tokActualAssign=False
                                     break
                                 elif(node.name=="Id"):
                                     #verificar si es funcion o variable
                                     tablaSimbolos[i].ret = "ID"
+                                    tablaSimbolos[i].declared=True
                                     #print("FUNCTION")
                                     break
                                 elif(node.name=="integer"):
                                     tablaSimbolos[i].ret = "INT"
+                                    tablaSimbolos[i].declared=True
                                     #print("INTEGER")
                                     break
                                 elif(node.name=="character"):
                                     tablaSimbolos[i].ret = "CHAR"
+                                    tablaSimbolos[i].declared=True
                                     #print("CHARACTER")
                                     break
                                 elif(node.name=="bool"):
                                     tablaSimbolos[i].ret = "BOOL"
+                                    tablaSimbolos[i].declared=True
                                     #print("BOOLEAN")
                                     break
                                 elif(node.name=="string"):
                                     tablaSimbolos[i].ret = "STRING"
+                                    tablaSimbolos[i].declared=True
                                     #print("STRING")
-                                    break
-                                                      
+                                    break                            
                 #print("%s%s" % (pre, node.name))
 
             nodo3 = Node(";", parent=nodoP)
