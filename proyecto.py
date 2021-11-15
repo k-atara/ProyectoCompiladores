@@ -45,9 +45,12 @@ def IterarGrupos(m):
                 sys.exit()
             elif(listaCategoria[i]=='INTEGER'):
                 columnToken=m.start()-column+1
+                
                 if(listaTokens[len(listaTokens)-1].lexema=='-'):
                     #print("Negativo",grupo[i])
-                    if(int(grupo[i])>=1 and int(grupo[i])<=2147483648):
+                    if(int(grupo[i])==-0):
+                        token = Token(grupo[i],listaCategoria[i],row,columnToken)
+                    elif(int(grupo[i])>=1 and int(grupo[i])<=2147483648):
                         token = Token(grupo[i],listaCategoria[i],row,columnToken)
                     else:
                         print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1)+ "TAMAÑO DEL NÚMERO EXCEDE LOS 32 BITS")
