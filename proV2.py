@@ -1191,3 +1191,7 @@ for i in range(len(tablaSimbolos)):
         tablaSimbolos[i].ret + "|" +
         str(tablaSimbolos[i].scope)
         )
+
+
+#----------------------------------------------SEMANTICO
+
