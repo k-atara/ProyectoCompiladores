@@ -1,0 +1,105 @@
+#GRAMÁTICA LIBRE DE CONTEXTO
+program -> deflist
+deflist -> deflist1
+deflist1 -> def deflist1
+deflist1 -> ''
+def -> vardef
+def -> fundef
+vardef -> var varlist ;
+varlist -> idlist
+idlist -> id idlistcont
+idlistcont -> , id idlistcont
+idlistcont -> ''
+fundef -> id ( paramlist ) { vardeflist stmtlist }
+paramlist -> idlist
+paramlist -> ''
+vardeflist -> vardeflist1
+vardeflist1 -> vardef vardeflist1
+vardeflist1 -> ''
+stmtlist -> stmtlist1
+stmtlist1 -> stmt stmtlist1
+stmtlist1 -> ''
+
+stmt -> id stmtP
+stmt -> stmtincr
+stmt -> stmtdecr
+stmt -> stmtif
+stmt -> stmtwhile
+stmt -> stmtdowhile
+stmt -> stmtbreak
+stmt -> stmtreturn
+stmt -> stmtempty
+
+stmtP -> = expr ; 
+stmtP -> ( exprlist ) ;
+stmtincr -> inc id ;
+stmtdecr -> dec id ;
+
+exprlist -> expr exprlistcont
+exprlist -> ''
+exprlistcont -> , expr exprlistcont
+exprlistcont -> ''
+
+stmtif -> if ( expr ) { stmtlist } elseiflist elsel
+elseiflist -> elseiflist1
+
+elseiflist1 -> elif ( expr ) { stmtlist } elseiflist1
+elseiflist1 -> ''
+elsel -> else { stmtlist }
+elsel -> ''
+stmtwhile -> while ( expr ) { stmtlist }
+stmtdowhile -> do { stmtlist } while ( expr ) ;
+stmtbreak -> break ;
+stmtreturn -> return expr ;
+stmtempty -> ;
+
+expr -> expror
+expror -> exprand expror1
+expror1 -> or exprand expror1
+expror1 -> '' 
+exprand -> exprcomp exprand1
+exprand1 -> and exprcomp exprand1
+exprand1 -> ''
+exprcomp -> exprrel exprcomp1
+exprcomp1 -> opcomp exprrel exprcomp1
+exprcomp1 -> ''
+
+opcomp -> ==
+opcomp -> <>
+exprrel -> expradd exprrel1
+exprrel1 -> oprel expradd exprrel1
+exprrel1 -> ''
+oprel -> <
+oprel -> <=
+oprel -> >
+oprel -> >=
+expradd -> exprmul expradd1
+expradd1 -> opadd exprmul expradd1
+expradd1 -> ''
+
+opadd -> +
+opadd -> −
+exprmul -> exprunary exprmul1
+exprmul1 -> opmul exprunary exprmul1
+exprmul1 -> ''
+opmul -> *
+opmul -> /
+opmul -> %
+exprunary -> opunary exprunary
+exprunary -> exprprimary
+opunary -> +
+opunary -> −
+opunary -> not
+
+exprprimary -> id exprprimaryP
+exprprimary -> array
+exprprimary -> lit
+exprprimary -> ( expr )
+
+exprprimaryP -> ''
+exprprimaryP -> ( exprlist ) 
+array -> [ exprlist ]
+lit -> litbool
+lit -> litint
+lit -> litchar
+lit -> litstr
