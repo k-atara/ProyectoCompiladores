@@ -7,10 +7,18 @@
 var a; 
 
 pepe(){
-    var a;
+    var a,b;
+    b=2
+    a=b;
+    a=7;
 }
 
 main() { 
-    var a;
+    pepe(1);
+    println(1,2);
+    reads();
+    pepe();
+    OLA();
+
 }
 
