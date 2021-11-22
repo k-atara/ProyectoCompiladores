@@ -407,6 +407,65 @@ def returnReturn():
             else:
                 tablaSimbolos[i].ret = "0"
     
+nombreFuncNamespace=""
+contParamDeclaracion=0
+def funcionesNamespace():
+    global nombreFuncNamespace
+    global contParamDeclaracion
+    global tablaSimbolos
+    if(nombreFuncNamespace=="println" or nombreFuncNamespace=="readi"
+    or nombreFuncNamespace=="reads"):
+        if(contParamDeclaracion==0):
+            print("bien 0")
+        else:
+            print("La funcion " + nombreFuncNamespace + " no requiere parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
+            #sys.exit()
+    elif(nombreFuncNamespace=="printi"
+    or nombreFuncNamespace=="printc"
+    or nombreFuncNamespace=="prints"
+    or nombreFuncNamespace=="new"
+    or nombreFuncNamespace=="size"):
+        if(contParamDeclaracion==1):
+            print("bien 1")
+        else:
+            print("La funcion " + nombreFuncNamespace + " requiere 1 parametro, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
+            #sys.exit()
+    elif(nombreFuncNamespace=="add" or nombreFuncNamespace=="get"):
+        if(contParamDeclaracion==2):
+            print("bien 2")
+        else:
+            print("La funcion " + nombreFuncNamespace + " requiere 2 parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
+            #sys.exit()
+    elif(nombreFuncNamespace=="set"):
+        if(contParamDeclaracion==3):
+            print("bien 3")
+        else:
+            print("La funcion " + nombreFuncNamespace + " requiere 3 parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
+            #sys.exit()
+    else:    
+        cF=0
+        c=0
+        for j in range(len(tablaSimbolos)):
+            if(tablaSimbolos[j].tokenType=="función"):
+                cF+=1
+        
+        for k in range(len(tablaSimbolos)):
+            if(tablaSimbolos[k].tokenType=="función" and tablaSimbolos[k].name!=nombreFuncNamespace):
+                c+=1
+
+        if(c==cF):
+            print("NO EXISTE LA FUNCION LLAMADA "+nombreFuncNamespace)
+        else:
+            for i in range(len(tablaSimbolos)):
+                if(tablaSimbolos[i].tokenType=="función" and tablaSimbolos[i].name==nombreFuncNamespace):
+                    if(contParamDeclaracion==tablaSimbolos[i].params):
+                        print("BIEN FUNCION DEC")
+                    else:
+                        print("La funcion "+nombreFuncNamespace+" requiere "+str(tablaSimbolos[i].params)+" parametro(s), pero se recibieron "+str(contParamDeclaracion)+" parametro(s)")
+                        break
+                
+                
+                
 #---------------------------------------------------------------------------------------- 
 
 def Program(nodoPadre):
@@ -553,6 +612,7 @@ def StmtlistP(nodoP):
 
 def Stmt(nodoP):
     global nombreVar
+    global nombreFuncNamespace
     if curToken not in pStmt:
         Error(pStmt,curToken)
     else:
@@ -576,6 +636,7 @@ def Stmt(nodoP):
         else:
             nodo2 = Node("Id", parent=nodoP)
             nombreVar = vEntrada[contador].lexema
+            nombreFuncNamespace = vEntrada[contador].lexema
             ExpectToken('IDENTIFIER')
             nodo3 = Node("StmtP", parent=nodoP)
             StmtP(nodo3)
@@ -583,6 +644,8 @@ def Stmt(nodoP):
 def StmtP(nodoP):
     global nombreVar
     global tokActualAssign
+    global contParamDeclaracion
+
     if curToken not in pStmtP:
         Error(pStmtP,curToken)
     else:
@@ -641,10 +704,14 @@ def StmtP(nodoP):
             ExpectToken('LPAR')
             nodo5 = Node("Exprlist", parent=nodoP)
             Exprlist(nodo5)
+            funcionesNamespace()
             nodo6 = Node(")", parent=nodoP)
             ExpectToken('RPAR')
             nodo7 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
+            #print(str(contParamDeclaracion))
+            contParamDeclaracion=0
+
 
 def Stmtincr(nodoP):
     nodoPa = Node("Stmtincr", parent=nodoP) 
@@ -818,6 +885,8 @@ def Stmtempty(nodoP):
     ExpectToken('SEMI')
 
 def Expr(nodoP):
+    global contParamDeclaracion
+    contParamDeclaracion+=1
     nodo = Node("Expror", parent=nodoP)
     Expror(nodo)
 
@@ -1083,19 +1152,19 @@ Program(nodoPadre)
 # for pre, fill, node in RenderTree(nodoPadre):
 #     print("%s%s" % (pre, node.name))
 
-print("Tabla de símbolos")
-for i in range(len(tablaSimbolos)): 
-    print(
-        str(tablaSimbolos[i].declared) + "|" + 
-        tablaSimbolos[i].tokenType + "|" + 
-        tablaSimbolos[i].name  + "|" +
-        tablaSimbolos[i].dataType  + "|" +
-        tablaSimbolos[i].size + "|" +
-        str(tablaSimbolos[i].params) + "|" +
-        tablaSimbolos[i].ret + "|" +
-        str(tablaSimbolos[i].scope) + "|" +
-        str(tablaSimbolos[i].globalLocal)
-        )
+# print("Tabla de símbolos")
+# for i in range(len(tablaSimbolos)): 
+#     print(
+#         str(tablaSimbolos[i].declared) + "|" + 
+#         tablaSimbolos[i].tokenType + "|" + 
+#         tablaSimbolos[i].name  + "|" +
+#         tablaSimbolos[i].dataType  + "|" +
+#         tablaSimbolos[i].size + "|" +
+#         str(tablaSimbolos[i].params) + "|" +
+#         tablaSimbolos[i].ret + "|" +
+#         str(tablaSimbolos[i].scope) + "|" +
+#         str(tablaSimbolos[i].globalLocal)
+#         )
 
 
 #----------------------------------------------SEMANTICO
@@ -1165,54 +1234,3 @@ for i in range(len(tablaSimbolos)):
 
 
 imprimirTabla()
-
-
-
-
-# si ID es variable
-#     si es global
-#         si ya se repite
-#             muere
-#         sino
-#             declared true
-#     sino es global
-#         si hay otro ID igual
-#             si es el mismo scope
-#                 muere
-#             sino
-#                 declare true
-
-
-
-# si ID es funcion
-#     si ID ya existe
-#         muere
-#     sino
-#         declared true
-
-# si ID es param 
-#     si hay otro ID igual
-#         si es el mismo scope
-#             muere
-#         sino
-#             declared true
-
-# si ID es variable
-#     si es global
-#         si ya se repite
-#             muere
-#         sino
-#             declared true
-#     sino es global
-#         si hay otro ID igual
-#             si es el mismo scope
-#                 muere
-#             sino
-#                 declare true
-
-
-
-
-
-
-
