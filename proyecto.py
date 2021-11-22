@@ -112,14 +112,14 @@ for m in respuestaRegex:
     # print('\n')  
     IterarGrupos(m)
 
-for j in range(len(listaTokens)):
-    print("Token numero: "+str(j+1) + ", Lexema: " + listaTokens[j].lexema + ", Categoria/Nombre: " + listaTokens[j].category + ", Row: "+ str(listaTokens[j].row) + ", Column: "+ str(listaTokens[j].column))
+# for j in range(len(listaTokens)):
+#     print("Token numero: "+str(j+1) + ", Lexema: " + listaTokens[j].lexema + ", Categoria/Nombre: " + listaTokens[j].category + ", Row: "+ str(listaTokens[j].row) + ", Column: "+ str(listaTokens[j].column))
 
-print("----------------------------------------------------")
-print("Numero de tokens: " +str(len(listaTokens)))
-print("Numero de filas: "+str(row))
-print("Fin de análisis léxico")
-print("----------------------------------------------------")
+# print("----------------------------------------------------")
+# print("Numero de tokens: " +str(len(listaTokens)))
+# print("Numero de filas: "+str(row))
+# print("Fin de análisis léxico")
+# print("----------------------------------------------------")
 
 #---------------------------------------------------------------------------------------------PARSER
 
@@ -189,7 +189,7 @@ lTokensDeseados=[]
 #VARIABLES PARA TABLA DE SIMBOLOS
 
 class TSimbolo:
-    def __init__(self, declared, tokenType, name, dataType, size, params, ret, scope ):
+    def __init__(self, declared, tokenType, name, dataType, size, params, ret, scope, globalLocal ):
         self.declared = declared #verificar si ya existia ese id o no (TRUE FALSE)
         self.tokenType = tokenType #tipo de token (variable o funcion)
         self.name = name #nombre o identificador del token
@@ -198,7 +198,7 @@ class TSimbolo:
         self.params = params #si es una funcion necesitamos cantidad de parametros y el tipo de cada uno, para ids es nulo, para funciones verificar su numero de parametros
         self.ret = ret #si es una funcion(el tipo de retorno), lo que devuelve el return (si no hay return, es un void)
         self.scope = scope #nivel de contexto 
-
+        self.globalLocal = globalLocal #global true, local false
 #tipo de dato en la primera asignacion
 #validar los digitos del INT
 listaTSimbolos = []
@@ -318,7 +318,9 @@ def ExpectToken(category):
     #print("contador"+str(contador))
     #print("ventrada "+vEntrada[contador-1].lexema)
     if(curToken == category):   
-        print(category) 
+        #print(category) 
+        
+        
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
@@ -347,8 +349,9 @@ tokenReturnCategory = ""
 tokActualAssign= False
 nombreVar = ""
 
-def VerificarExistencia(token):
-    global tablaSimbolos
+
+boolGlobalLocal=False
+
     
 def lastFunction():
     global contadorParam
@@ -363,17 +366,16 @@ def lastFunction():
 #Scope
     
 def crearVar(token):
-    declared = VerificarExistencia(token)
+    global boolGlobalLocal
     if(boolVar==True):
-        objeto = TSimbolo(False, "variable", token.lexema, "*", "*", "-", "-", numScope)
+        objeto = TSimbolo(False, "variable", token.lexema, "*", "*", "-", "-", numScope, boolGlobalLocal)
     elif(boolParam==True):
-        objeto = TSimbolo(False, "parametro", token.lexema, "*", "*", "-", "-", numScope)
+        objeto = TSimbolo(False, "parametro", token.lexema, "*", "*", "-", "-", numScope, False)
     tablaSimbolos.append(objeto)
     
 def crearFun(token):
     global contadorParam
-    declared = VerificarExistencia(token)
-    objeto = TSimbolo(False, "función", token.lexema, "-", "-", contadorParam, "*", numScope)
+    objeto = TSimbolo(False, "función", token.lexema, "-", "-", contadorParam, "*", numScope, True)
     tablaSimbolos.append(objeto)
     
 def returnReturn():
@@ -426,10 +428,13 @@ def DeflistP(nodoP):
         nodoE= Node("ε", parent=nodoP)
     
 def Def(nodoP):
+    global boolGlobalLocal
     nodo = Node("Def", parent=nodoP)
     if(curToken == 'IDENTIFIER'):
+        boolGlobalLocal=False
         Fundef(nodo)
     elif(curToken=='VAR'):
+        boolGlobalLocal=True
         Vardef(nodo)
 
 def Vardef(nodoP):
@@ -443,6 +448,7 @@ def Vardef(nodoP):
     nodo3 = Node(";", parent=nodoP)
     boolVar = False
     ExpectToken('SEMI')
+
 
 def Varlist(nodoP):
     nodo= Node("Idlist", parent=nodoP)
@@ -476,6 +482,7 @@ def Fundef(nodoP):
     global boolParam
     global nombreFunReturn
     global boolReturn
+
     nodoPa = Node("Fundef", parent=nodoP)
     nodo = Node("Id", parent=nodoPa)
     ExpectToken('IDENTIFIER')
@@ -595,33 +602,33 @@ def StmtP(nodoP):
                                     tablaSimbolos[i].ret = "ARRAY"
                                     #print("ARRAY")
                                     #print(tablaSimbolos[i].name)
-                                    tablaSimbolos[i].declared=True
+                                    #tablaSimbolos[i].declared=True
                                     tokActualAssign=False
                                     break
                                 elif(node.name=="Id"):
                                     #verificar si es funcion o variable
                                     tablaSimbolos[i].ret = "ID"
-                                    tablaSimbolos[i].declared=True
+                                    #tablaSimbolos[i].declared=True
                                     #print("FUNCTION")
                                     break
                                 elif(node.name=="integer"):
                                     tablaSimbolos[i].ret = "INT"
-                                    tablaSimbolos[i].declared=True
+                                    #tablaSimbolos[i].declared=True
                                     #print("INTEGER")
                                     break
                                 elif(node.name=="character"):
                                     tablaSimbolos[i].ret = "CHAR"
-                                    tablaSimbolos[i].declared=True
+                                    #tablaSimbolos[i].declared=True
                                     #print("CHARACTER")
                                     break
                                 elif(node.name=="bool"):
                                     tablaSimbolos[i].ret = "BOOL"
-                                    tablaSimbolos[i].declared=True
+                                    #tablaSimbolos[i].declared=True
                                     #print("BOOLEAN")
                                     break
                                 elif(node.name=="string"):
                                     tablaSimbolos[i].ret = "STRING"
-                                    tablaSimbolos[i].declared=True
+                                    #tablaSimbolos[i].declared=True
                                     #print("STRING")
                                     break                            
                 #print("%s%s" % (pre, node.name))
@@ -754,7 +761,7 @@ def Stmtwhile(nodoP):
     Expr(nodo3)
     nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
-    nodo5 = Node("}", parent=nodoPa)
+    nodo5 = Node("{", parent=nodoPa)
     ExpectToken('LBRACE')
     numScope+=1
     nodo6 = Node("Stmtlist", parent=nodoPa) 
@@ -1070,11 +1077,11 @@ def Lit(nodoP):
 GetCurrentToken()
 Program(nodoPadre)
 
-print("\n")
-print("Árbol sintáctico")
-print("\n")
-for pre, fill, node in RenderTree(nodoPadre):
-    print("%s%s" % (pre, node.name))
+# print("\n")
+# print("Árbol sintáctico")
+# print("\n")
+# for pre, fill, node in RenderTree(nodoPadre):
+#     print("%s%s" % (pre, node.name))
 
 print("Tabla de símbolos")
 for i in range(len(tablaSimbolos)): 
@@ -1086,9 +1093,126 @@ for i in range(len(tablaSimbolos)):
         tablaSimbolos[i].size + "|" +
         str(tablaSimbolos[i].params) + "|" +
         tablaSimbolos[i].ret + "|" +
-        str(tablaSimbolos[i].scope)
+        str(tablaSimbolos[i].scope) + "|" +
+        str(tablaSimbolos[i].globalLocal)
         )
 
 
 #----------------------------------------------SEMANTICO
+
+def imprimirTabla():
+    global tablaSimbolos
+    print("Tabla de símbolos")
+    for i in range(len(tablaSimbolos)): 
+        print(
+            str(tablaSimbolos[i].declared) + "|" + 
+            tablaSimbolos[i].tokenType + "|" + 
+            tablaSimbolos[i].name  + "|" +
+            tablaSimbolos[i].dataType  + "|" +
+            tablaSimbolos[i].size + "|" +
+            str(tablaSimbolos[i].params) + "|" +
+            tablaSimbolos[i].ret + "|" +
+            str(tablaSimbolos[i].scope) + "|" +
+            str(tablaSimbolos[i].globalLocal)
+            )
+
+boolMain=False
+#VERIFICAR MAIN
+for i in range(len(tablaSimbolos)): 
+    if(tablaSimbolos[i].name=="main"):
+        boolMain=True
+    
+
+if(not boolMain):
+    print("ERROR: NO EXISTE LA FUNCIÓN \"main\" EN EL PROGRAMA")
+    sys.exit()
+
+#VERIFICAR TABLA DE VARIABLES
+
+contTSimbolos=0
+for i in range(len(tablaSimbolos)):
+    if i>0:
+        nomID=tablaSimbolos[i]
+        contTSimbolos=i-1
+        while contTSimbolos>=0:
+            nomCompID=tablaSimbolos[contTSimbolos]
+            if(nomID.tokenType=="función"):
+                if(nomID.name==nomCompID.name):
+                    print("ERROR: YA EXISTE LA FUNCION " + nomID.name + " DECLARADA")
+                    tablaSimbolos[i].declared=True
+                    imprimirTabla()
+                    #sys.exit()
+            if(nomID.tokenType=="parametro"):
+                if(nomID.name==nomCompID.name and nomID.scope==nomCompID.scope):
+                    print("ERROR: YA EXISTE EL PARAMETRO " + nomID.name + " DECLARADO")
+                    tablaSimbolos[i].declared=True
+                    imprimirTabla()
+                    #sys.exit()
+            if(nomID.tokenType=="variable"):
+                    if(nomID.globalLocal==True and nomCompID.globalLocal==True):
+                        if nomID.name==nomCompID.name:
+                            print("ERROR: YA EXISTE LA VARIABLE GLOBAL " + nomID.name + " DECLARADA")
+                            tablaSimbolos[i].declared=True
+                            imprimirTabla()
+                     #       sys.exit()
+                    else:
+                        if(nomID.name==nomCompID.name and nomID.scope==nomCompID.scope):
+                            print("ERROR: YA EXISTE LA VARIABLE " + nomID.name + " DECLARADA EN ESE SCOPE")
+                            tablaSimbolos[i].declared=True
+                            imprimirTabla()
+                      #      sys.exit()
+            contTSimbolos-=1
+
+
+imprimirTabla()
+
+
+
+
+# si ID es variable
+#     si es global
+#         si ya se repite
+#             muere
+#         sino
+#             declared true
+#     sino es global
+#         si hay otro ID igual
+#             si es el mismo scope
+#                 muere
+#             sino
+#                 declare true
+
+
+
+# si ID es funcion
+#     si ID ya existe
+#         muere
+#     sino
+#         declared true
+
+# si ID es param 
+#     si hay otro ID igual
+#         si es el mismo scope
+#             muere
+#         sino
+#             declared true
+
+# si ID es variable
+#     si es global
+#         si ya se repite
+#             muere
+#         sino
+#             declared true
+#     sino es global
+#         si hay otro ID igual
+#             si es el mismo scope
+#                 muere
+#             sino
+#                 declare true
+
+
+
+
+
+
 
