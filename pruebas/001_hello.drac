@@ -5,5 +5,8 @@
 
 main() {
     prints("hello, world\n");
+    printi(recursive_factorial(num));
+    println();
+    printc(']');
     return 42;
 }
