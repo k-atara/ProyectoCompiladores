@@ -47,7 +47,6 @@ def IterarGrupos(m):
                 columnToken=m.start()-column+1
                 
                 if(listaTokens[len(listaTokens)-1].lexema=='-'):
-                    #print("Negativo",grupo[i])
                     if(int(grupo[i])==-0):
                         token = Token(grupo[i],listaCategoria[i],row,columnToken)
                     elif(int(grupo[i])>=1 and int(grupo[i])<=2147483648):
@@ -56,7 +55,6 @@ def IterarGrupos(m):
                         print("ERROR EN LA LINEA "+ str(row) + " EN LA COLUMNA " + str(m.start()-column+1)+ "TAMAÑO DEL NÚMERO EXCEDE LOS 32 BITS")
                         sys.exit()
                 else:
-                    #print("Positivo",grupo[i])
                     if(int(grupo[i])>=0 and int(grupo[i])<=2147483648):
                         token = Token(grupo[i],listaCategoria[i],row,columnToken)
                     else:
@@ -72,34 +70,15 @@ def IterarGrupos(m):
                     token = Token(grupo[i],listaCategoria[i],row,columnToken)
                 listaTokens.append(token)
                 break
-            
-            # if int
-            #     c-1=minus
-            #         if 1-2,147,483,648 
-            #             chingon
-            #         else
-            #             F muere el programa
-            #     else    
-            #         if 0-2,147,483,647
-            #             chingon
-            #         else
-            #             F print(integer fuera de rango)
 
+#nom_archivo = sys.argv[1]
 
-
-nom_archivo = sys.argv[1]
-
-file=open(nom_archivo)
-#file = open(r"path", "r")
+#file=open(nom_archivo)
+file = open(r"C:\Users\AlienWare\Documents\Python\Compiladores\ProyectoCompiladores\pruebas\001_hello.drac", "r")
 code=file.read()
 file.close()
 
-##########################################################################################################
-
-#regexFinal=r'([\(][\*](.|\n)*?[\*][\)])'
 regexFinal=r'([(][*](.|\n)*?[*][)])|([-]{2}.*)|([(])|([)])|([[])|([]])|([{])|([}])|([;])|([,])|([-])|([+])|([*])|([/])|([%])|(==)|(<>)|(>=)|(<=)|([<])|([=])|([>])|(main\b)|(prints\b)|(and\b)|(break\b)|(dec\b)|(do\b)|(elif\b)|(else\b)|(false\b)|(if\b)|(inc\b)|(not\b)|(or\b)|(return\b)|(true\b)|(var\b)|(while\b)|([a-zA-Z][a-zA-Z0-9_]*)|(\d+)|(\".*\")|(\'\\[u][0-9a-fA-F]{6}\')|(\'([^\n\'\\]|\\[nrt\\\'"])\'|\'.\')|(\n)|(    )|(\r)|(\s)|(\\)|(\')|(\")|(.)'
-
-#falta unicode y |('(\\[u][[0-9a-fA-F]{6})'|'([^\n'\\]|\\[nrt\\'"])'|'.')|("([^\n'\\]|.*)")
 
 respuestaRegex=re.finditer(regexFinal,code)
 nToken=0
@@ -204,10 +183,8 @@ class TSimbolo:
 listaTSimbolos = []
 numScope=1
 
-
 #nodo principal arbol
 nodoPadre = Node("PROGRAM")
-
 
 def GetCurrentToken():
     global contador
@@ -217,7 +194,6 @@ def GetCurrentToken():
     global lEntrada
     if(contador<lEntrada):
         curToken=vEntrada[contador].category
-        #print(str(curToken))
         return curToken
     else:
         print("Fin de analisis sintáctico\n")
@@ -252,7 +228,6 @@ def ErrorS(categoria, token):
 
     print("Tabla de símbolos\n")
 
-    #del tablaSimbolos[len(tablaSimbolos)-1]
     for i in range(len(tablaSimbolos)): 
         print(
             str(tablaSimbolos[i].declared) + "|" + 
@@ -296,7 +271,6 @@ def Error(categoryList, token):
         print("%s%s" % (pre, node.name))
 
     print("Tabla de símbolos")
-    #del tablaSimbolos[len(tablaSimbolos)-1]
     for i in range(len(tablaSimbolos)): 
         print(
             str(tablaSimbolos[i].declared) + "|" + 
@@ -314,13 +288,7 @@ def Error(categoryList, token):
 def ExpectToken(category):
     global curToken
     global vEntrada
-    #print("curtoken"+ curToken)
-    #print("contador"+str(contador))
-    #print("ventrada "+vEntrada[contador-1].lexema)
-    if(curToken == category):   
-        #print(category) 
-        
-        
+    if(curToken == category):
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
@@ -349,9 +317,10 @@ tokenReturnCategory = ""
 tokActualAssign= False
 nombreVar = ""
 
-
 boolGlobalLocal=False
 
+contParamDeclaracion=0
+boolFunDeclararion=False
     
 def lastFunction():
     global contadorParam
@@ -384,7 +353,6 @@ def returnReturn():
     global nombreFunReturn
     global tokenReturnCategory
     global tablaSimbolos
-    #print(nombreFunReturn)
     for i in range(len(tablaSimbolos)):
         if(tablaSimbolos[i].name == nombreFunReturn and tablaSimbolos[i].tokenType == "función"):
             if(boolReturn == True):
@@ -408,18 +376,16 @@ def returnReturn():
                 tablaSimbolos[i].ret = "0"
     
 nombreFuncNamespace=""
-contParamDeclaracion=0
+
 def funcionesNamespace():
     global nombreFuncNamespace
     global contParamDeclaracion
     global tablaSimbolos
-    if(nombreFuncNamespace=="println" or nombreFuncNamespace=="readi"
-    or nombreFuncNamespace=="reads"):
+    if(nombreFuncNamespace=="println" or nombreFuncNamespace=="readi" or nombreFuncNamespace=="reads"):
         if(contParamDeclaracion==0):
             print("bien 0")
         else:
             print("La funcion " + nombreFuncNamespace + " no requiere parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
-            #sys.exit()
     elif(nombreFuncNamespace=="printi"
     or nombreFuncNamespace=="printc"
     or nombreFuncNamespace=="prints"
@@ -427,21 +393,22 @@ def funcionesNamespace():
     or nombreFuncNamespace=="size"):
         if(contParamDeclaracion==1):
             print("bien 1")
+        elif(boolFunDeclararion==True):
+            print("Bien 1 fun")
         else:
             print("La funcion " + nombreFuncNamespace + " requiere 1 parametro, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
-            #sys.exit()
     elif(nombreFuncNamespace=="add" or nombreFuncNamespace=="get"):
         if(contParamDeclaracion==2):
             print("bien 2")
         else:
             print("La funcion " + nombreFuncNamespace + " requiere 2 parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
-            #sys.exit()
     elif(nombreFuncNamespace=="set"):
         if(contParamDeclaracion==3):
             print("bien 3")
+        elif(boolFunDeclararion==True):
+            print("Bien 3 fun")
         else:
             print("La funcion " + nombreFuncNamespace + " requiere 3 parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
-            #sys.exit()
     else:    
         cF=0
         c=0
@@ -463,8 +430,6 @@ def funcionesNamespace():
                     else:
                         print("La funcion "+nombreFuncNamespace+" requiere "+str(tablaSimbolos[i].params)+" parametro(s), pero se recibieron "+str(contParamDeclaracion)+" parametro(s)")
                         break
-                
-                
                 
 #---------------------------------------------------------------------------------------- 
 
@@ -645,6 +610,7 @@ def StmtP(nodoP):
     global nombreVar
     global tokActualAssign
     global contParamDeclaracion
+    global boolFunDeclararion
 
     if curToken not in pStmtP:
         Error(pStmtP,curToken)
@@ -663,43 +629,28 @@ def StmtP(nodoP):
                             if(tablaSimbolos[i].name == nombreVar and (tablaSimbolos[i].tokenType == "parametro" or tablaSimbolos[i].tokenType == "variable") ):
                                 if(node.name=="array"):
                                     tablaSimbolos[i].ret = "ARRAY"
-                                    #print("ARRAY")
-                                    #print(tablaSimbolos[i].name)
-                                    #tablaSimbolos[i].declared=True
                                     tokActualAssign=False
                                     break
                                 elif(node.name=="Id"):
                                     #verificar si es funcion o variable
                                     tablaSimbolos[i].ret = "ID"
-                                    #tablaSimbolos[i].declared=True
-                                    #print("FUNCTION")
                                     break
                                 elif(node.name=="integer"):
                                     tablaSimbolos[i].ret = "INT"
-                                    #tablaSimbolos[i].declared=True
-                                    #print("INTEGER")
                                     break
                                 elif(node.name=="character"):
                                     tablaSimbolos[i].ret = "CHAR"
-                                    #tablaSimbolos[i].declared=True
-                                    #print("CHARACTER")
                                     break
                                 elif(node.name=="bool"):
                                     tablaSimbolos[i].ret = "BOOL"
-                                    #tablaSimbolos[i].declared=True
-                                    #print("BOOLEAN")
                                     break
                                 elif(node.name=="string"):
                                     tablaSimbolos[i].ret = "STRING"
-                                    #tablaSimbolos[i].declared=True
-                                    #print("STRING")
-                                    break                            
-                #print("%s%s" % (pre, node.name))
+                                    break         
 
             nodo3 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
         elif(curToken == 'LPAR'):
-            #LLAMAR FUNCIONES SIN GUARDAR VALOR
             nodo4 = Node("(", parent=nodoP)
             ExpectToken('LPAR')
             nodo5 = Node("Exprlist", parent=nodoP)
@@ -709,7 +660,7 @@ def StmtP(nodoP):
             ExpectToken('RPAR')
             nodo7 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
-            #print(str(contParamDeclaracion))
+            boolFunDeclararion=False
             contParamDeclaracion=0
 
 
@@ -1105,7 +1056,9 @@ def Exprprimary(nodoP):
             ExpectToken('RPAR')
 
 def ExprprimaryP(nodoP):
+    global boolFunDeclararion
     while(curToken in pExprprimaryP):
+        boolFunDeclararion = True
         nodo = Node("(", parent=nodoP)
         ExpectToken('LPAR')
         nodo2 = Node("Exprlist", parent=nodoP)
@@ -1145,27 +1098,6 @@ def Lit(nodoP):
 
 GetCurrentToken()
 Program(nodoPadre)
-
-# print("\n")
-# print("Árbol sintáctico")
-# print("\n")
-# for pre, fill, node in RenderTree(nodoPadre):
-#     print("%s%s" % (pre, node.name))
-
-# print("Tabla de símbolos")
-# for i in range(len(tablaSimbolos)): 
-#     print(
-#         str(tablaSimbolos[i].declared) + "|" + 
-#         tablaSimbolos[i].tokenType + "|" + 
-#         tablaSimbolos[i].name  + "|" +
-#         tablaSimbolos[i].dataType  + "|" +
-#         tablaSimbolos[i].size + "|" +
-#         str(tablaSimbolos[i].params) + "|" +
-#         tablaSimbolos[i].ret + "|" +
-#         str(tablaSimbolos[i].scope) + "|" +
-#         str(tablaSimbolos[i].globalLocal)
-#         )
-
 
 #----------------------------------------------SEMANTICO
 
@@ -1232,5 +1164,11 @@ for i in range(len(tablaSimbolos)):
                       #      sys.exit()
             contTSimbolos-=1
 
+
+print("\n")
+print("Árbol sintáctico")
+print("\n")
+for pre, fill, node in RenderTree(nodoPadre):
+    print("%s%s" % (pre, node.name))
 
 imprimirTabla()

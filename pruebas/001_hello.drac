@@ -3,22 +3,33 @@
    (C) 2021 Ariel Ortiz, ITESM CEM.
 *)
 
-
-var a; 
-
-pepe(){
-    var a,b;
-    b=2
-    a=b;
-    a=7;
-}
-
 main() { 
-    pepe(1);
-    println(1,2);
+    printi(sum);
+    printi(iterative_factorial(num));
+    printi(get(a, i));
+
+    printc('[');
+
+    prints("Input a number: ");
+    prints(", ");
+    prints(binary(num)); --No funciona
+
+    println();
+
+    readi();
+
     reads();
-    pepe();
-    OLA();
+
+    new(1);
+
+    size(h);
+
+    add(result, remainder + '0');
+
+    get(option, 0);
+
+    set(array, start, get(array, finish)); --No funciona
+    set(array, finish, temp);
 
 }
 
