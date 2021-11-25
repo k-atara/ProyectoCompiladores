@@ -1125,7 +1125,7 @@ for i in range(len(tablaSimbolos)):
     
 
 if(not boolMain):
-    print("ERROR: NO EXISTE LA FUNCIÓN \"main\" EN EL PROGRAMA")
+    print("ERROR: No existe la función \"main\" en el programa")
     sys.exit()
 
 #VERIFICAR TABLA DE VARIABLES
