@@ -71,10 +71,10 @@ def IterarGrupos(m):
                 listaTokens.append(token)
                 break
 
-#nom_archivo = sys.argv[1]
+nom_archivo = sys.argv[1]
 
-#file=open(nom_archivo)
-file = open(r"C:\Users\AlienWare\Documents\Python\Compiladores\ProyectoCompiladores\pruebas\001_hello.drac", "r")
+file=open(nom_archivo)
+#file = open(r"C:\Users\AlienWare\Documents\Python\Compiladores\ProyectoCompiladores\pruebas\001_hello.drac", "r")
 code=file.read()
 file.close()
 
@@ -183,6 +183,35 @@ class TSimbolo:
 listaTSimbolos = []
 numScope=1
 
+boolCiclo=False
+boolBreak=False
+colaObjetosCiclos=[]
+
+class objetoCiclo:
+    def __init__(self, numApertura, numCierre, cicloActive, breakActive):
+        self.numApertura=numApertura
+        self.numCierre = numCierre
+        self.cicloActive = cicloActive
+        self.breakActive=breakActive
+        
+# lOb(
+#     ob2,9
+#     ob3,8
+#     ob4,5
+#     ob6,7
+# )
+
+# 2
+#     3
+#         4
+#         5
+
+#         6
+#         7
+#     8
+# 9
+
+
 #nodo principal arbol
 nodoPadre = Node("PROGRAM")
 
@@ -288,7 +317,18 @@ def Error(categoryList, token):
 def ExpectToken(category):
     global curToken
     global vEntrada
+    global numScope
+    global boolCiclo
+    global boolBreak
+    global colaObjetosCiclos
+
+    lenCiclos = len(colaObjetosCiclos)
     if(curToken == category):
+        if(curToken=='LBRACE'):
+            objCiclo = objetoCiclo(numScope, 0, boolCiclo, False)
+            colaObjetosCiclos.append(objCiclo)
+        if(curToken=='RBRACE'):
+            colaObjetosCiclos[lenCiclos-1].breakActive=boolBreak
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
@@ -431,13 +471,19 @@ def funcionesNamespace():
                         print("La funcion "+nombreFuncNamespace+" requiere "+str(tablaSimbolos[i].params)+" parametro(s), pero se recibieron "+str(contParamDeclaracion)+" parametro(s)")
                         break
                 
-#---------------------------------------------------------------------------------------- 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
 def Program(nodoPadre):
+    # if curToken not in pStmt:
+    #     Error(pStmt,curToken)
     while(curToken in pDeflist):
+        print("hola")
         Deflist(nodoPadre)
     if curToken not in pDeflist:
         nodoE= Node("ε", parent=nodoPadre)
+        Error(pDeflist, curToken)
 
 def Deflist(nodoP):
     nodo = Node("Deflist", parent=nodoP)
@@ -450,6 +496,7 @@ def DeflistP(nodoP):
         DeflistP(nodo)
     if curToken not in pDeflistP:
         nodoE= Node("ε", parent=nodoP)
+        Error(pDeflist, curToken)
     
 def Def(nodoP):
     global boolGlobalLocal
@@ -1165,10 +1212,10 @@ for i in range(len(tablaSimbolos)):
             contTSimbolos-=1
 
 
-print("\n")
-print("Árbol sintáctico")
-print("\n")
-for pre, fill, node in RenderTree(nodoPadre):
-    print("%s%s" % (pre, node.name))
+# print("\n")
+# print("Árbol sintáctico")
+# print("\n")
+# for pre, fill, node in RenderTree(nodoPadre):
+#     print("%s%s" % (pre, node.name))
 
 imprimirTabla()

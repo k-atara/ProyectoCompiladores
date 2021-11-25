@@ -1,35 +1,5 @@
-(* File: 001_hello.drac
-   The classical "hello, world" program.
-   (C) 2021 Ariel Ortiz, ITESM CEM.
-*)
-
+var fails;
+break;
 main() { 
-    printi(sum);
-    printi(iterative_factorial(num));
-    printi(get(a, i));
-
-    printc('[');
-
-    prints("Input a number: ");
-    prints(", ");
-    prints(binary(num)); --No funciona
-
-    println();
-
-    readi();
-
-    reads();
-
-    new(1);
-
-    size(h);
-
-    add(result, remainder + '0');
-
-    get(option, 0);
-
-    set(array, start, get(array, finish)); --No funciona
-    set(array, finish, temp);
-
+   
 }
-
