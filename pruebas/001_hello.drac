@@ -1,5 +1,8 @@
-var fails;
-break;
-main() { 
-   
+main() {
+    var a,b;
+    a=1;
+    a='a';
+    a="hola";
+    b='y';
+    b=False;
 }
