@@ -3,7 +3,17 @@
    (C) 2021 Ariel Ortiz, ITESM CEM.
 *)
 
+assert(value1, value2, message) {
+    if (value1 <> value2) {
+        inc fails;
+        prints("Assertion failure: "); --No jala
+        prints(message);
+        println();
+    }
+}
+
 main() {
     prints("hello, world\n");
+    assert(get(a, i), get(s, i), "error in string literal");
     return 42;
 }

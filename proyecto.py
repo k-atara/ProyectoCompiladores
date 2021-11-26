@@ -338,17 +338,18 @@ def ExpectToken(category):
         if(curToken=='RBRACE'):
             for i in range(len(colaObjetosCiclos)):
                 if(posCola!=0):
-                    if(colaObjetosCiclos[posCola-1].numCierre==0 and booleanoRBRACE==False):
+                    if(colaObjetosCiclos[posCola-1].numCierre==0 and booleanoRBRACE==False and colaObjetosCiclos[posCola-1].cicloActive==TRUE ):
                         colaObjetosCiclos[posCola-1].numCierre=numScope
                         booleanoRBRACE=True
                         valScopeBreak=colaObjetosCiclos[posCola-2].numApertura
                         colaObjetosCiclos[posCola-1].cicloActive=boolCiclo
                         boolCiclo=False
                     else:
+                        #print("")
                         boolCiclo=True
 
                 posCola-=1
-            #boolCiclo=False
+            boolCiclo=True
             booleanoRBRACE=False
         if(curToken=='BREAK'):
             for i in range(len(colaObjetosCiclos)):
@@ -1283,12 +1284,12 @@ imprimirTabla()
 
 #BREAKS
 for i in range(len(colaObjetosCiclos)):
-    # print(str(i))
-    # print(str(colaObjetosCiclos[i].numApertura))
-    # print(str(colaObjetosCiclos[i].numCierre))
-    # print(colaObjetosCiclos[i].cicloActive)
-    # print(colaObjetosCiclos[i].breakActive)
-    # print("\n")
+    #print(str(i))
+    #print(str(colaObjetosCiclos[i].numApertura))
+    #print(str(colaObjetosCiclos[i].numCierre))
+    #print(colaObjetosCiclos[i].cicloActive)
+    #print(colaObjetosCiclos[i].breakActive)
+    #print("\n")
 
     if(colaObjetosCiclos[i].cicloActive==False and colaObjetosCiclos[i].breakActive==True):
         print("ERROR SEMÁNTICO: HAY UN BREAK FUERA DE UN CICLO, EN LA LINEA "+str(colaObjetosCiclos[i].row))

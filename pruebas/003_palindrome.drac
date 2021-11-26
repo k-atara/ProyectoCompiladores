@@ -15,7 +15,6 @@ is_palindrome(str) {
         inc start;
         dec finish;
     }
-    break; --No debería jalar
     return true;
 }
 
