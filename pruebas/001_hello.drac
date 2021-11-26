@@ -1,8 +1,9 @@
+(* File: 001_hello.drac
+   The classical "hello, world" program.
+   (C) 2021 Ariel Ortiz, ITESM CEM.
+*)
+
 main() {
-    var a,b;
-    a=1;
-    a='a';
-    a="hola";
-    b='y';
-    b=False;
+    prints("hello, world\n");
+    return 42;
 }

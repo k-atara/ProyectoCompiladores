@@ -74,7 +74,7 @@ def IterarGrupos(m):
 nom_archivo = sys.argv[1]
 
 file=open(nom_archivo)
-#file = open(r"C:\Users\AlienWare\Documents\Python\Compiladores\ProyectoCompiladores\pruebas\001_hello.drac", "r")
+#file = open(r"C:\Users\AlienWare\Documents\Python\Compiladores\ProyectoCompiladores\pruebas\010_breaks.drac", "r")
 code=file.read()
 file.close()
 
@@ -450,7 +450,7 @@ def funcionesNamespace():
     global tablaSimbolos
     if(nombreFuncNamespace=="println" or nombreFuncNamespace=="readi" or nombreFuncNamespace=="reads"):
         if(contParamDeclaracion==0):
-            print("bien 0")
+            print("Bien: 0 parametros en la función", nombreFuncNamespace)
         else:
             print("La funcion " + nombreFuncNamespace + " no requiere parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
     elif(nombreFuncNamespace=="printi"
@@ -459,21 +459,21 @@ def funcionesNamespace():
     or nombreFuncNamespace=="new"
     or nombreFuncNamespace=="size"):
         if(contParamDeclaracion==1):
-            print("bien 1")
+            print("Bien: 1 parametro en la función", nombreFuncNamespace)
         elif(boolFunDeclararion==True):
-            print("Bien 1 fun")
+            print("*Bien: 1 parametro en la función", nombreFuncNamespace)
         else:
             print("La funcion " + nombreFuncNamespace + " requiere 1 parametro, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
     elif(nombreFuncNamespace=="add" or nombreFuncNamespace=="get"):
         if(contParamDeclaracion==2):
-            print("bien 2")
+            print("Bien: 2 parametros en la función", nombreFuncNamespace)
         else:
             print("La funcion " + nombreFuncNamespace + " requiere 2 parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
     elif(nombreFuncNamespace=="set"):
         if(contParamDeclaracion==3):
-            print("bien 3")
+            print("Bien: 3 parametros en la función", nombreFuncNamespace)
         elif(boolFunDeclararion==True):
-            print("Bien 3 fun")
+            print("*Bien: 3 parametros en la función", nombreFuncNamespace)
         else:
             print("La funcion " + nombreFuncNamespace + " requiere 3 parametros, pero tiene: "+ str(contParamDeclaracion) +" parametro(s)" )
     else:    
