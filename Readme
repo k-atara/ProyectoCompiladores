@@ -1,14 +1,7 @@
 ---------------------------POR HACER
 ULTRA DIFICIL
 3.-Any variable defined outside a function is a global variable. The scope of a global variable is the body of all the functions in the program, even those defined before the variable itself.
-
-D
 11.-It’s an error to refer to a variable, parameter or function not in scope in the current namespace.
-
-a=b;
-
-----------------------------Falta detalles
-UNA VARIABLE SOLO PUEDE TENER EL TIPO DE SU PRIMERA ASIGNACION (LO TENEMOS CON EL ULTIMO ASIGNADO)
 
 ----------------------------Completados
 1.-The language only supports a 32-bit signed two’s complement integer (int32) data type. This is the data type for every variable, parameter and function return value. This means that a Drac compiler doesn’t need to verify type consistency.
@@ -22,13 +15,12 @@ UNA VARIABLE SOLO PUEDE TENER EL TIPO DE SU PRIMERA ASIGNACION (LO TENEMOS CON E
 9.-The following names are part of the initial namespace for functions and constitute Drac’s API (the number after the slash symbol (/) is the arity of the given function): http://34.212.143.74/s202111/tc3048/drac/drac_language_spec.html#_semantics
 10.-Each function has its own independent namespace for its local names. This means that parameter and local variable names have to be unique inside the body of each function. It’s valid to have a parameter or local variable name with the same name as a global variable. In that case the local name shadows the global variable.
 
-
+12.-The break statement can only be used inside the body of a while or do-while statements.
 13.-Values of integer literals should be between -2147483648 and 2147483647 (−231 and 231−1, respectively).
 
 
 ---------------------------No sé
 A function definition is visible from the body of all the functions in a program, even from itself. Thus, functions can call themselves recursively directly or indirectly.
-12.-The break statement can only be used inside the body of a while or do-while statements.
 
 
 
@@ -38,13 +30,26 @@ numscope    bool        boolBreak   RES
 2           TRUE        TRUE        G
 3           FALSE       FALSE       G
 
+1
+{2
+    {3
+        {4
+
+        }5
+        {6
+
+        }7
+    }8
+}9
 
 1
-pepe(){2
-    while(){3
-        if(){4       
-        
-        }5
-        break
-    }6
-}7
+{2
+    {3
+
+    }4
+}5
+
+[
+    2 0
+    3 4
+]

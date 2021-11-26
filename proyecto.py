@@ -188,11 +188,12 @@ boolBreak=False
 colaObjetosCiclos=[]
 
 class objetoCiclo:
-    def __init__(self, numApertura, numCierre, cicloActive, breakActive):
+    def __init__(self, numApertura, numCierre, cicloActive, breakActive, row):
         self.numApertura=numApertura
         self.numCierre = numCierre
         self.cicloActive = cicloActive
         self.breakActive=breakActive
+        self.row=row
         
 # lOb(
 #     ob2,9
@@ -314,6 +315,9 @@ def Error(categoryList, token):
         
     sys.exit()
 
+valScopeBreak=0
+rowBreak=0
+
 def ExpectToken(category):
     global curToken
     global vEntrada
@@ -321,14 +325,37 @@ def ExpectToken(category):
     global boolCiclo
     global boolBreak
     global colaObjetosCiclos
+    global valScopeBreak
+    global rowBreak
 
     lenCiclos = len(colaObjetosCiclos)
+    posCola=lenCiclos
+    booleanoRBRACE=False
     if(curToken == category):
         if(curToken=='LBRACE'):
-            objCiclo = objetoCiclo(numScope, 0, boolCiclo, False)
+            objCiclo = objetoCiclo(numScope, 0, boolCiclo, False,rowBreak)
             colaObjetosCiclos.append(objCiclo)
         if(curToken=='RBRACE'):
-            colaObjetosCiclos[lenCiclos-1].breakActive=boolBreak
+            for i in range(len(colaObjetosCiclos)):
+                if(posCola!=0):
+                    if(colaObjetosCiclos[posCola-1].numCierre==0 and booleanoRBRACE==False):
+                        colaObjetosCiclos[posCola-1].numCierre=numScope
+                        booleanoRBRACE=True
+                        valScopeBreak=colaObjetosCiclos[posCola-2].numApertura
+                posCola-=1
+            boolCiclo=False
+            booleanoRBRACE=False
+        if(curToken=='BREAK'):
+            for i in range(len(colaObjetosCiclos)):
+                if(colaObjetosCiclos[i].numApertura==numScope):
+                    colaObjetosCiclos[i].breakActive=True
+                if(colaObjetosCiclos[i].numApertura==valScopeBreak):
+                    colaObjetosCiclos[i].breakActive=True
+                colaObjetosCiclos[i].row=vEntrada[contador].row          
+            print(str(rowBreak))
+        if(curToken=='DO' or curToken=='WHILE'):
+            boolCiclo=True
+
         tokenNuevo = copy.copy(vEntrada[contador])
         GetCurrentToken()
         return tokenNuevo
@@ -478,25 +505,26 @@ def funcionesNamespace():
 def Program(nodoPadre):
     # if curToken not in pStmt:
     #     Error(pStmt,curToken)
-    while(curToken in pDeflist):
-        print("hola")
-        Deflist(nodoPadre)
     if curToken not in pDeflist:
         nodoE= Node("ε", parent=nodoPadre)
-        Error(pDeflist, curToken)
+        Error(pProgram, curToken)
+    while(curToken in pDeflist):
+        Deflist(nodoPadre)
+
 
 def Deflist(nodoP):
     nodo = Node("Deflist", parent=nodoP)
     DeflistP(nodo)
 
 def DeflistP(nodoP):
+    if curToken not in pDeflistP:
+        nodoE= Node("ε", parent=nodoP)
+        #Error(pDeflistP, curToken)
     while(curToken in pDeflistP):
         nodo = Node("DeflistP", parent=nodoP)
         Def(nodo)
         DeflistP(nodo)
-    if curToken not in pDeflistP:
-        nodoE= Node("ε", parent=nodoP)
-        Error(pDeflist, curToken)
+
     
 def Def(nodoP):
     global boolGlobalLocal
@@ -568,6 +596,7 @@ def Fundef(nodoP):
     nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
     nodo5 = Node("{", parent=nodoPa)
+    #numScope+=1
     ExpectToken('LBRACE')
     nodo6 = Node("Vardeflist", parent=nodoPa)
     Vardeflist(nodo6)
@@ -575,9 +604,9 @@ def Fundef(nodoP):
     Stmtlist(nodo7)
     nodo8 = Node("}", parent=nodoPa)
     returnReturn()
+    numScope+=1
     ExpectToken('RBRACE')
     boolReturn = False
-    numScope+=1
 
 def Paramlist(nodoP):
     global numScope
@@ -677,24 +706,33 @@ def StmtP(nodoP):
                                 if(node.name=="array"):
                                     tablaSimbolos[i].ret = "ARRAY"
                                     tokActualAssign=False
+                                    tablaSimbolos[i].declared = True 
                                     break
                                 elif(node.name=="Id"):
                                     #verificar si es funcion o variable
                                     tablaSimbolos[i].ret = "ID"
+                                    tablaSimbolos[i].declared = True 
                                     break
                                 elif(node.name=="integer"):
                                     tablaSimbolos[i].ret = "INT"
+                                    tablaSimbolos[i].declared = True 
                                     break
                                 elif(node.name=="character"):
                                     tablaSimbolos[i].ret = "CHAR"
+                                    tablaSimbolos[i].declared = True 
                                     break
                                 elif(node.name=="bool"):
                                     tablaSimbolos[i].ret = "BOOL"
+                                    tablaSimbolos[i].declared = True 
                                     break
                                 elif(node.name=="string"):
                                     tablaSimbolos[i].ret = "STRING"
-                                    break         
-
+                                    tablaSimbolos[i].declared = True 
+                                    break    
+                        else:
+                            if(tablaSimbolos[i].dataType!=node.name):
+                                print("LA VARIABLE "+ tablaSimbolos[i].name+" ES UNA VARIABLE DE TIPO "+ tablaSimbolos[i].ret+", NO SE PUEDE ASIGNAR OTRO TIPO DE DATO ")
+                                sys.exit()
             nodo3 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
         elif(curToken == 'LPAR'):
@@ -759,13 +797,13 @@ def Stmtif(nodoP):
     nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
     nodo5 = Node("{", parent=nodoPa)
-    ExpectToken('LBRACE')
     numScope+=1
+    ExpectToken('LBRACE')
     nodo6 = Node("Stmtlist", parent=nodoPa)
     Stmtlist(nodo6)
     nodo7 = Node("}", parent=nodoPa)
-    ExpectToken('RBRACE')
     numScope+=1
+    ExpectToken('RBRACE')
     nodo8 = Node("Elseiflist", parent=nodoPa)
     Elseiflist(nodo8)
     nodo9 = Node("Else", parent=nodoPa)
@@ -787,13 +825,13 @@ def ElseiflistP(nodoP):
         nodo4 = Node(")", parent=nodoP)
         ExpectToken('RPAR')
         nodo5 = Node("{", parent=nodoP)
-        ExpectToken('LBRACE')
         numScope+=1
+        ExpectToken('LBRACE')
         nodo6 = Node("Stmtlist", parent=nodoP)
         Stmtlist(nodo6)
         nodo7 = Node("}", parent=nodoP)
-        ExpectToken('RBRACE')
         numScope+=1
+        ExpectToken('RBRACE')
         nodo8 = Node("EsleiflistP", parent=nodoP)
         ElseiflistP(nodo8)
     if curToken not in pElseiflistP:
@@ -805,13 +843,13 @@ def Elsel(nodoP):
         nodo = Node("else", parent=nodoP)
         ExpectToken('ELSE')
         nodo2 = Node("{", parent=nodoP)
-        ExpectToken('LBRACE')
         numScope+=1
+        ExpectToken('LBRACE')
         nodo3 = Node("Stmtlist", parent=nodoP)
         Stmtlist(nodo3)
         nodo4 = Node("}", parent=nodoP)
-        ExpectToken('RBRACE')
         numScope+=1
+        ExpectToken('RBRACE')
     if curToken not in pElsel:
         nodoE= Node("ε", parent=nodoP)
 
@@ -827,13 +865,13 @@ def Stmtwhile(nodoP):
     nodo4 = Node(")", parent=nodoPa)
     ExpectToken('RPAR')
     nodo5 = Node("{", parent=nodoPa)
-    ExpectToken('LBRACE')
     numScope+=1
+    ExpectToken('LBRACE')
     nodo6 = Node("Stmtlist", parent=nodoPa) 
     Stmtlist(nodo6)
     nodo7 = Node("}", parent=nodoPa)
-    ExpectToken('RBRACE')
     numScope+=1
+    ExpectToken('RBRACE')
 
 def Stmtdowhile(nodoP):
     global numScope
@@ -841,13 +879,13 @@ def Stmtdowhile(nodoP):
     nodo = Node("do", parent=nodoPa)
     ExpectToken('DO')
     nodo2 = Node("{", parent=nodoPa)
-    ExpectToken('LBRACE')
     numScope+=1
+    ExpectToken('LBRACE')
     nodo3 = Node("Stmtlist", parent=nodoPa)
     Stmtlist(nodo3)
     nodo4 = Node("}", parent=nodoPa)
-    ExpectToken('RBRACE')
     numScope+=1
+    ExpectToken('RBRACE')
     nodo5 = Node("while", parent=nodoPa)
     ExpectToken('WHILE')
     nodo6 = Node("(", parent=nodoPa)
@@ -1219,3 +1257,17 @@ for i in range(len(tablaSimbolos)):
 #     print("%s%s" % (pre, node.name))
 
 imprimirTabla()
+
+#BREAKS
+for i in range(len(colaObjetosCiclos)):
+    # print(str(i))
+    # print(str(colaObjetosCiclos[i].numApertura))
+    # print(str(colaObjetosCiclos[i].numCierre))
+    # print(colaObjetosCiclos[i].cicloActive)
+    # print(colaObjetosCiclos[i].breakActive)
+    # print("\n")
+
+    if(colaObjetosCiclos[i].cicloActive==False and colaObjetosCiclos[i].breakActive==True):
+        print("ERROR SEMÁNTICO: HAY UN BREAK FUERA DE UN CICLO, EN LA LINEA "+str(colaObjetosCiclos[i].row))
+        #sys.exit()
+
