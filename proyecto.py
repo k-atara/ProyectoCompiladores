@@ -74,7 +74,7 @@ def IterarGrupos(m):
 nom_archivo = sys.argv[1]
 
 file=open(nom_archivo)
-#file = open(r"C:\Users\AlienWare\Documents\Python\Compiladores\ProyectoCompiladores\pruebas\010_breaks.drac", "r")
+#file = open(r"C:\Users\Juan\OneDrive\Escritorio\9no_Semestre\Compiladores\P2\ProyectoCompilador\ProyectoCompiladores\pruebas\005_arrays.drac", "r")
 code=file.read()
 file.close()
 
@@ -342,8 +342,13 @@ def ExpectToken(category):
                         colaObjetosCiclos[posCola-1].numCierre=numScope
                         booleanoRBRACE=True
                         valScopeBreak=colaObjetosCiclos[posCola-2].numApertura
+                        colaObjetosCiclos[posCola-1].cicloActive=boolCiclo
+                        boolCiclo=False
+                    else:
+                        boolCiclo=True
+
                 posCola-=1
-            boolCiclo=False
+            #boolCiclo=False
             booleanoRBRACE=False
         if(curToken=='BREAK'):
             for i in range(len(colaObjetosCiclos)):
@@ -443,11 +448,12 @@ def returnReturn():
                 tablaSimbolos[i].ret = "0"
     
 nombreFuncNamespace=""
-
+bParamDec=False
 def funcionesNamespace():
     global nombreFuncNamespace
     global contParamDeclaracion
     global tablaSimbolos
+
     if(nombreFuncNamespace=="println" or nombreFuncNamespace=="readi" or nombreFuncNamespace=="reads"):
         if(contParamDeclaracion==0):
             print("Bien: 0 parametros en la función", nombreFuncNamespace)
@@ -497,6 +503,8 @@ def funcionesNamespace():
                     else:
                         print("La funcion "+nombreFuncNamespace+" requiere "+str(tablaSimbolos[i].params)+" parametro(s), pero se recibieron "+str(contParamDeclaracion)+" parametro(s)")
                         break
+    contParamDeclaracion=0
+    
                 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
@@ -687,6 +695,8 @@ def StmtP(nodoP):
     global tokActualAssign
     global contParamDeclaracion
     global boolFunDeclararion
+    global boolCYAPOFAVO
+    global bParamDec
 
     if curToken not in pStmtP:
         Error(pStmtP,curToken)
@@ -739,14 +749,16 @@ def StmtP(nodoP):
             nodo4 = Node("(", parent=nodoP)
             ExpectToken('LPAR')
             nodo5 = Node("Exprlist", parent=nodoP)
+            bParamDec=True
             Exprlist(nodo5)
             funcionesNamespace()
+            bParamDec=False
             nodo6 = Node(")", parent=nodoP)
             ExpectToken('RPAR')
             nodo7 = Node(";", parent=nodoP)
             ExpectToken('SEMI')
             boolFunDeclararion=False
-            contParamDeclaracion=0
+            boolCYAPOFAVO=False
 
 
 def Stmtincr(nodoP):
@@ -767,8 +779,15 @@ def Stmtdecr(nodoP):
     nodo3 = Node(";", parent=nodoPa)
     ExpectToken('SEMI')
 
+boolCYAPOFAVO=False
+
 def Exprlist(nodoP):
+    global contParamDeclaracion
+    global boolCYAPOFAVO
+    global bParamDec
     while(curToken in pExprlist):
+        if(boolCYAPOFAVO==False and bParamDec==True ):
+            contParamDeclaracion+=1
         nodo = Node("Exprlist", parent=nodoP)
         Expr(nodo)
         Exprlistcont(nodo)
@@ -776,9 +795,15 @@ def Exprlist(nodoP):
         nodoE= Node("ε", parent=nodoP)
 
 def Exprlistcont(nodoP):
+    global contParamDeclaracion
+    global boolCYAPOFAVO
+    global bParamDec
     while(curToken in pExprlistcont):
         nodo = Node(",", parent=nodoP)
         ExpectToken('COMMA')
+        if(bParamDec==True):
+            boolCYAPOFAVO=True
+            contParamDeclaracion+=1
         nodo2 = Node("Exprlistcont", parent=nodoP)
         Expr(nodo2)
         Exprlistcont(nodo2)
@@ -921,8 +946,6 @@ def Stmtempty(nodoP):
     ExpectToken('SEMI')
 
 def Expr(nodoP):
-    global contParamDeclaracion
-    contParamDeclaracion+=1
     nodo = Node("Expror", parent=nodoP)
     Expror(nodo)
 

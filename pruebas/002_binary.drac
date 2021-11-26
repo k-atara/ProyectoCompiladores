@@ -30,7 +30,7 @@ binary(num) {
         num = num / 2;
     }
     reverse(result);
-    return result;
+    return result; 
 }
 
 main() {

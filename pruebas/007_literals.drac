@@ -9,7 +9,7 @@ var fails;
 assert(value1, value2, message) {
     if (value1 <> value2) {
         inc fails;
-        prints("Assertion failure: ");
+        prints("Assertion failure: "); --No jala
         prints(message);
         println();
     }
@@ -18,7 +18,7 @@ assert(value1, value2, message) {
 main() {
     var s, a, i, n;
     fails = 0;
-    assert('\n', 10, "error in newline literal");
+    assert('\n', 10, "error in newline literal"); --No jala
     assert('\r', 13, "error in carriage return literal");
     assert('\t', 9, "error in tab literal");
     assert('\\', 92, "error in backslash literal");

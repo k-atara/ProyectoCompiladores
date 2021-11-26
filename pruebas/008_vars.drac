@@ -8,7 +8,7 @@ var a;
 x(b) {
     var c;
     c = 5;
-    prints("Function x\n");
+    prints("Function x\n"); --No jala
     prints("a = ");
     printi(a);
     println();
@@ -28,7 +28,7 @@ main() {
     b = 2;
     c = 3;
     x = 4;
-    x(x);
+    x(x); --No jala
     prints("Function main\n");
     prints("a = ");
     printi(a);

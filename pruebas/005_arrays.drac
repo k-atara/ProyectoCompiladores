@@ -81,7 +81,7 @@ main() {
              54, 75, 62, 71, 10,
               3, 71, 16, 49, 66,
              91, 69, 62, 25, 65];
-    prints("Original array: ");
+    prints("Original array: "); -- No jala
     print_array(array);
     println();
     sum = sum_array(array);
