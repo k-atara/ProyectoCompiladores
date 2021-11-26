@@ -194,24 +194,6 @@ class objetoCiclo:
         self.cicloActive = cicloActive
         self.breakActive=breakActive
         self.row=row
-        
-# lOb(
-#     ob2,9
-#     ob3,8
-#     ob4,5
-#     ob6,7
-# )
-
-# 2
-#     3
-#         4
-#         5
-
-#         6
-#         7
-#     8
-# 9
-
 
 #nodo principal arbol
 nodoPadre = Node("PROGRAM")
@@ -358,7 +340,7 @@ def ExpectToken(category):
                 if(colaObjetosCiclos[i].numApertura==valScopeBreak):
                     colaObjetosCiclos[i].breakActive=True
                 colaObjetosCiclos[i].row=vEntrada[contador].row          
-            print(str(rowBreak))
+            #print(str(rowBreak))
         if(curToken=='DO' or curToken=='WHILE'):
             boolCiclo=True
 
@@ -495,12 +477,14 @@ def funcionesNamespace():
                 c+=1
 
         if(c==cF):
-            print("NO EXISTE LA FUNCION LLAMADA "+nombreFuncNamespace)
+            print("No existe la función "+nombreFuncNamespace)
         else:
             for i in range(len(tablaSimbolos)):
                 if(tablaSimbolos[i].tokenType=="función" and tablaSimbolos[i].name==nombreFuncNamespace):
                     if(contParamDeclaracion==tablaSimbolos[i].params):
-                        print("BIEN FUNCION DEC")
+                        print("Función "+nombreFuncNamespace+" bien llamada con "+str(contParamDeclaracion)+" parametro/s")
+                    elif(boolFunDeclararion==True):
+                        print("*Función "+nombreFuncNamespace+" bien llamada con "+str(tablaSimbolos[i].params)+" parametro/s")
                     else:
                         print("La funcion "+nombreFuncNamespace+" requiere "+str(tablaSimbolos[i].params)+" parametro(s), pero se recibieron "+str(contParamDeclaracion)+" parametro(s)")
                         break
