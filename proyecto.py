@@ -730,7 +730,7 @@ def StmtP(nodoP):
                                     tablaSimbolos[i].declared = True 
                                     break    
                         else:
-                            if(tablaSimbolos[i].dataType!=node.name):
+                            if(tablaSimbolos[i].dataType!=node.name and tablaSimbolos[i].dataType!='*'):
                                 print("LA VARIABLE "+ tablaSimbolos[i].name+" ES UNA VARIABLE DE TIPO "+ tablaSimbolos[i].ret+", NO SE PUEDE ASIGNAR OTRO TIPO DE DATO ")
                                 sys.exit()
             nodo3 = Node(";", parent=nodoP)
