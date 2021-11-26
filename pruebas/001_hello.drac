@@ -3,33 +3,12 @@
    (C) 2021 Ariel Ortiz, ITESM CEM.
 *)
 
+var fails;
+
 main() { 
-    printi(sum);
-    printi(iterative_factorial(num));
-    printi(get(a, i));
+   var a;
 
-    printc('[');
-
-    prints("Input a number: ");
-    prints(", ");
-    prints(binary(num)); --No funciona
-
-    println();
-
-    readi();
-
-    reads();
-
-    new(1);
-
-    size(h);
-
-    add(result, remainder + '0');
-
-    get(option, 0);
-
-    set(array, start, get(array, finish)); --No funciona
-    set(array, finish, temp);
-
+   a=19;
 }
+
 

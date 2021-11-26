@@ -1117,16 +1117,16 @@ def imprimirTabla():
             str(tablaSimbolos[i].globalLocal)
             )
 
-boolMain=False
-#VERIFICAR MAIN
-for i in range(len(tablaSimbolos)): 
-    if(tablaSimbolos[i].name=="main"):
-        boolMain=True
+# boolMain=False
+# VERIFICAR MAIN
+# for i in range(len(tablaSimbolos)): 
+#     if(tablaSimbolos[i].name=="main"):
+#         boolMain=True
     
 
-if(not boolMain):
-    print("ERROR: No existe la función \"main\" en el programa")
-    sys.exit()
+# if(not boolMain):
+#     print("ERROR: No existe la función \"main\" en el programa")
+#     sys.exit()
 
 #VERIFICAR TABLA DE VARIABLES
 
