@@ -29,3 +29,22 @@ UNA VARIABLE SOLO PUEDE TENER EL TIPO DE SU PRIMERA ASIGNACION (LO TENEMOS CON E
 ---------------------------No sé
 A function definition is visible from the body of all the functions in a program, even from itself. Thus, functions can call themselves recursively directly or indirectly.
 12.-The break statement can only be used inside the body of a while or do-while statements.
+
+
+
+
+numscope    bool        boolBreak   RES
+1           FALSE       TRUE        F        
+2           TRUE        TRUE        G
+3           FALSE       FALSE       G
+
+
+1
+pepe(){2
+    while(){3
+        if(){4       
+        
+        }5
+        break
+    }6
+}7
